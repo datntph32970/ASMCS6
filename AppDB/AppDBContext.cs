@@ -1,8 +1,10 @@
 ﻿using AppDB.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,8 +12,10 @@ namespace AppDB
 {
     public class AppDBContext : DbContext
     {
-        public AppDBContext(DbContextOptions<AppDBContext> options) : base(options)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public AppDBContext(DbContextOptions<AppDBContext> options, IHttpContextAccessor httpContextAccessor) : base(options)
         {
+            _httpContextAccessor = httpContextAccessor;
         }
         public DbSet<Users> Users { get; set; }
         public DbSet<Roles> Roles { get; set; }
@@ -45,6 +49,44 @@ namespace AppDB
                 .WithMany(u => u.Staff_Orders)
                 .HasForeignKey(o => o.StaffID)
                 .OnDelete(DeleteBehavior.Restrict);
+        }
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            var entries = ChangeTracker.Entries<BaseEntity>();
+
+            var userIdClaim = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier);
+            Guid.TryParse(userIdClaim?.Value, out var userId);
+
+            var userNameClaim = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Name);
+            var userName = userNameClaim?.Value;
+            foreach (var entry in entries)
+            {
+                foreach (var prop in entry.Properties)
+                {
+                    if (prop.CurrentValue != null)
+                    {
+                        if (prop.Metadata.ClrType == typeof(DateTime))
+                            prop.CurrentValue = ((DateTime)prop.CurrentValue).ToLocalTime();
+
+                        if (prop.Metadata.ClrType == typeof(DateTime?))
+                            prop.CurrentValue = ((DateTime?)prop.CurrentValue).Value.ToLocalTime();
+                    }
+                }
+                if (entry.State == EntityState.Added)
+                {
+                    entry.Entity.createdDate = DateTime.UtcNow;
+                    entry.Entity.createdById = userId;
+                    entry.Entity.createdByName = userName;
+                }
+                else if (entry.State == EntityState.Modified)
+                {
+                    entry.Entity.updatedDate = DateTime.UtcNow;
+                    entry.Entity.updatedById = userId;
+                    entry.Entity.updatedByName = userName;
+                }
+            }
+
+            return await base.SaveChangesAsync(cancellationToken);
         }
     }
 }

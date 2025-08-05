@@ -4,6 +4,6 @@ namespace AppAPI.Services.RolesService.ViewModels
 {
     public class RolesSearch:SearchBase
     {
-        public string RoleName { get; set; }
+        public string? RoleName { get; set; }
     }
 }

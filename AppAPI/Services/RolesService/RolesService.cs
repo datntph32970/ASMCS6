@@ -1,4 +1,5 @@
-﻿using AppAPI.Services.BaseServices;
+﻿using AppAPI.Repositories.BaseRepository;
+using AppAPI.Services.BaseServices;
 using AppAPI.Services.BaseServices.Common;
 using AppAPI.Services.RolesService.Dto;
 using AppAPI.Services.RolesService.ViewModels;
@@ -9,6 +10,10 @@ namespace AppAPI.Services.RolesService
 {
     public class RolesService : BaseService<Roles>, IRolesService
     {
+        public RolesService(IBaseRepository<Roles> repository) : base(repository)
+        {
+        }
+
         public async Task<PagedList<RolesDto>> GetData(RolesSearch search)
         {
             var query = from r in GetQueryable()
