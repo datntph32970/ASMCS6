@@ -7,6 +7,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using System.Security.Cryptography;
 
 namespace AppDB
 {
@@ -49,7 +50,70 @@ namespace AppDB
                 .WithMany(u => u.Staff_Orders)
                 .HasForeignKey(o => o.StaffID)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // Seed Roles
+            var adminRoleId = Guid.Parse("11111111-1111-1111-1111-111111111111");
+            var staffRoleId = Guid.Parse("22222222-2222-2222-2222-222222222222");
+            var customerRoleId = Guid.Parse("33333333-3333-3333-3333-333333333333");
+
+            modelBuilder.Entity<Roles>().HasData(
+                new Roles
+                {
+                    id = adminRoleId,
+                    RoleName = "Admin",
+                    createdDate = DateTime.UtcNow,
+                    createdById = adminRoleId,
+                    createdByName = "System"
+                },
+                new Roles
+                {
+                    id = staffRoleId,
+                    RoleName = "Staff",
+                    createdDate = DateTime.UtcNow,
+                    createdById = adminRoleId,
+                    createdByName = "System"
+                },
+                new Roles
+                {
+                    id = customerRoleId,
+                    RoleName = "Customer",
+                    createdDate = DateTime.UtcNow,
+                    createdById = adminRoleId,
+                    createdByName = "System"
+                }
+            );
+
+            // Seed Admin User
+            var adminUserId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+            var hashedPassword = HashPassword("admin123456");
+
+            modelBuilder.Entity<Users>().HasData(
+                new Users
+                {
+                    id = adminUserId,
+                    Username = "admin",
+                    Password = hashedPassword,
+                    FullName = "Administrator",
+                    Email = "admin@example.com",
+                    Phone = "0123456789",
+                    Address = "Admin Address",
+                    RoleId = adminRoleId,
+                    createdDate = DateTime.UtcNow,
+                    createdById = adminUserId,
+                    createdByName = "System"
+                }
+            );
         }
+
+        private string HashPassword(string password)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+                return Convert.ToBase64String(hashedBytes);
+            }
+        }
+
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             var entries = ChangeTracker.Entries<BaseEntity>();

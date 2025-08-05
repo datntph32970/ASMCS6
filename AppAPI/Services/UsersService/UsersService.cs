@@ -5,6 +5,8 @@ using AppAPI.Services.UsersService.Dto;
 using AppAPI.Services.UsersService.ViewModels;
 using AppDB.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace AppAPI.Services.UsersService
 {
@@ -73,6 +75,17 @@ namespace AppAPI.Services.UsersService
                               }).FirstOrDefaultAsync();
 
             return item;
+        }
+
+
+
+        private string HashPassword(string password)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+                return Convert.ToBase64String(hashedBytes);
+            }
         }
     }
 }

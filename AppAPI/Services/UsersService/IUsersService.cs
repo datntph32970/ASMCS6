@@ -10,5 +10,6 @@ namespace AppAPI.Services.UsersService
     {
         Task<PagedList<UsersDto>> GetData(UsersSearch search);
         Task<UsersDto> GetDto(Guid id);
+
     }
-} 
+}
