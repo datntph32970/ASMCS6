@@ -8,6 +8,6 @@ namespace AppAPI.Services.StatusOrdersService.ViewModels
         public Guid OrderId { get; set; }
 
         [Required(ErrorMessage = "ID trạng thái là bắt buộc")]
-        public Guid StatuId { get; set; }
+        public Guid StatusId { get; set; }
     }
 }

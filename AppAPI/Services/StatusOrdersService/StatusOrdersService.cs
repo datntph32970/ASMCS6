@@ -21,7 +21,7 @@ namespace AppAPI.Services.StatusOrdersService
                         {
                             id = so.id,
                             OrderId = so.OrderId,
-                            StatuId = so.StatuId,
+                            StatusId = so.StatusId,
                             createdById = so.createdById,
                             createdByName = so.createdByName,
                             createdDate = so.createdDate,
@@ -34,7 +34,7 @@ namespace AppAPI.Services.StatusOrdersService
                 if (search.OrderID.HasValue)
                     query = query.Where(x => x.OrderId == search.OrderID);
                 if (search.StatusID.HasValue)
-                    query = query.Where(x => x.StatuId == search.StatusID);
+                    query = query.Where(x => x.StatusId == search.StatusID);
             }
             query = query.OrderByDescending(x => x.createdDate);
             return await PagedList<StatusOrdersDto>.CreateAsync(query, search);
@@ -49,7 +49,7 @@ namespace AppAPI.Services.StatusOrdersService
             {
                 id = statusOrder.id,
                 OrderId = statusOrder.OrderId,
-                StatuId = statusOrder.StatuId,
+                StatusId = statusOrder.StatusId,
                 createdById = statusOrder.createdById,
                 createdByName = statusOrder.createdByName,
                 createdDate = statusOrder.createdDate,

@@ -8,7 +8,7 @@ namespace AppDB.Models
 {
     public  class StatusOrders : BaseEntity
     {
-        public Guid StatuId { get; set; }
+        public Guid StatusId { get; set; }
         public Guid OrderId { get; set; }
         public virtual Status Status { get; set; } = null!;
         public virtual Orders Order { get; set; } = null!;
