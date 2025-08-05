@@ -1,6 +1,8 @@
-﻿namespace AppAPI.Services.RolesService.ViewModels
+﻿using AppAPI.Services.BaseServices.Common;
+
+namespace AppAPI.Services.RolesService.ViewModels
 {
-    public class RolesSearch
+    public class RolesSearch:SearchBase
     {
         public string RoleName { get; set; }
     }
