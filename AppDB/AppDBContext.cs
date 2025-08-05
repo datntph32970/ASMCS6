@@ -61,7 +61,7 @@ namespace AppDB
                 {
                     id = adminRoleId,
                     RoleName = "Admin",
-                    createdDate = DateTime.UtcNow,
+                    createdDate = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
                     createdById = adminRoleId,
                     createdByName = "System"
                 },
@@ -69,7 +69,7 @@ namespace AppDB
                 {
                     id = staffRoleId,
                     RoleName = "Staff",
-                    createdDate = DateTime.UtcNow,
+                    createdDate = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
                     createdById = adminRoleId,
                     createdByName = "System"
                 },
@@ -77,7 +77,7 @@ namespace AppDB
                 {
                     id = customerRoleId,
                     RoleName = "Customer",
-                    createdDate = DateTime.UtcNow,
+                    createdDate = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
                     createdById = adminRoleId,
                     createdByName = "System"
                 }
@@ -98,7 +98,7 @@ namespace AppDB
                     Phone = "0123456789",
                     Address = "Admin Address",
                     RoleId = adminRoleId,
-                    createdDate = DateTime.UtcNow,
+                    createdDate = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
                     createdById = adminUserId,
                     createdByName = "System"
                 }

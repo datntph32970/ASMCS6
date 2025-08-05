@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppDB.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20250805130012_init")]
+    [Migration("20250805151656_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -41,8 +41,8 @@ namespace AppDB.Migrations
                     b.Property<Guid>("createdById")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("createdByName")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("createdByName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("createdDate")
                         .HasColumnType("datetime2");
@@ -50,8 +50,8 @@ namespace AppDB.Migrations
                     b.Property<Guid?>("updatedById")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("updatedByName")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("updatedByName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("updatedDate")
                         .HasColumnType("datetime2");
@@ -79,8 +79,8 @@ namespace AppDB.Migrations
                     b.Property<Guid>("createdById")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("createdByName")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("createdByName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("createdDate")
                         .HasColumnType("datetime2");
@@ -88,8 +88,8 @@ namespace AppDB.Migrations
                     b.Property<Guid?>("updatedById")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("updatedByName")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("updatedByName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("updatedDate")
                         .HasColumnType("datetime2");
@@ -127,8 +127,8 @@ namespace AppDB.Migrations
                     b.Property<Guid>("createdById")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("createdByName")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("createdByName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("createdDate")
                         .HasColumnType("datetime2");
@@ -136,8 +136,8 @@ namespace AppDB.Migrations
                     b.Property<Guid?>("updatedById")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("updatedByName")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("updatedByName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("updatedDate")
                         .HasColumnType("datetime2");
@@ -168,8 +168,8 @@ namespace AppDB.Migrations
                     b.Property<Guid>("createdById")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("createdByName")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("createdByName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("createdDate")
                         .HasColumnType("datetime2");
@@ -177,8 +177,8 @@ namespace AppDB.Migrations
                     b.Property<Guid?>("updatedById")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("updatedByName")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("updatedByName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("updatedDate")
                         .HasColumnType("datetime2");
@@ -207,17 +207,14 @@ namespace AppDB.Migrations
                     b.Property<Guid?>("StaffID")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<Guid>("createdById")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("createdByName")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("createdByName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("createdDate")
                         .HasColumnType("datetime2");
@@ -225,8 +222,8 @@ namespace AppDB.Migrations
                     b.Property<Guid?>("updatedById")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("updatedByName")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("updatedByName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("updatedDate")
                         .HasColumnType("datetime2");
@@ -267,8 +264,8 @@ namespace AppDB.Migrations
                     b.Property<Guid>("createdById")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("createdByName")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("createdByName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("createdDate")
                         .HasColumnType("datetime2");
@@ -276,8 +273,8 @@ namespace AppDB.Migrations
                     b.Property<Guid?>("updatedById")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("updatedByName")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("updatedByName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("updatedDate")
                         .HasColumnType("datetime2");
@@ -302,8 +299,8 @@ namespace AppDB.Migrations
                     b.Property<Guid>("createdById")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("createdByName")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("createdByName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("createdDate")
                         .HasColumnType("datetime2");
@@ -311,8 +308,8 @@ namespace AppDB.Migrations
                     b.Property<Guid?>("updatedById")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("updatedByName")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("updatedByName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("updatedDate")
                         .HasColumnType("datetime2");
@@ -320,6 +317,110 @@ namespace AppDB.Migrations
                     b.HasKey("id");
 
                     b.ToTable("Roles");
+
+                    b.HasData(
+                        new
+                        {
+                            id = new Guid("11111111-1111-1111-1111-111111111111"),
+                            RoleName = "Admin",
+                            createdById = new Guid("11111111-1111-1111-1111-111111111111"),
+                            createdByName = "System",
+                            createdDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            id = new Guid("22222222-2222-2222-2222-222222222222"),
+                            RoleName = "Staff",
+                            createdById = new Guid("11111111-1111-1111-1111-111111111111"),
+                            createdByName = "System",
+                            createdDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            id = new Guid("33333333-3333-3333-3333-333333333333"),
+                            RoleName = "Customer",
+                            createdById = new Guid("11111111-1111-1111-1111-111111111111"),
+                            createdByName = "System",
+                            createdDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        });
+                });
+
+            modelBuilder.Entity("AppDB.Models.Status", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("createdById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("createdByName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("createdDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("updatedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("updatedByName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("updatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("id");
+
+                    b.ToTable("Status");
+                });
+
+            modelBuilder.Entity("AppDB.Models.StatusOrders", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("StatuId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("Statusid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("createdById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("createdByName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("createdDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("updatedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("updatedByName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("updatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("Statusid");
+
+                    b.ToTable("StatusOrders");
                 });
 
             modelBuilder.Entity("AppDB.Models.Users", b =>
@@ -361,8 +462,8 @@ namespace AppDB.Migrations
                     b.Property<Guid>("createdById")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("createdByName")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("createdByName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("createdDate")
                         .HasColumnType("datetime2");
@@ -370,8 +471,8 @@ namespace AppDB.Migrations
                     b.Property<Guid?>("updatedById")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("updatedByName")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("updatedByName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("updatedDate")
                         .HasColumnType("datetime2");
@@ -381,6 +482,22 @@ namespace AppDB.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            Address = "Admin Address",
+                            Email = "admin@example.com",
+                            FullName = "Administrator",
+                            Password = "rA59A3gXCU6eC0RB+brjIJ1nsC+khJFwZfcbFhCaGng=",
+                            Phone = "0123456789",
+                            RoleId = new Guid("11111111-1111-1111-1111-111111111111"),
+                            Username = "admin",
+                            createdById = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            createdByName = "System",
+                            createdDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        });
                 });
 
             modelBuilder.Entity("AppDB.Models.ComboDetails", b =>
@@ -450,6 +567,25 @@ namespace AppDB.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("AppDB.Models.StatusOrders", b =>
+                {
+                    b.HasOne("AppDB.Models.Orders", "Order")
+                        .WithMany("StatusOrders")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AppDB.Models.Status", "Status")
+                        .WithMany("StatusOrders")
+                        .HasForeignKey("Statusid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Status");
+                });
+
             modelBuilder.Entity("AppDB.Models.Users", b =>
                 {
                     b.HasOne("AppDB.Models.Roles", "Role")
@@ -474,6 +610,8 @@ namespace AppDB.Migrations
             modelBuilder.Entity("AppDB.Models.Orders", b =>
                 {
                     b.Navigation("OrderDetails");
+
+                    b.Navigation("StatusOrders");
                 });
 
             modelBuilder.Entity("AppDB.Models.Products", b =>
@@ -486,6 +624,11 @@ namespace AppDB.Migrations
             modelBuilder.Entity("AppDB.Models.Roles", b =>
                 {
                     b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("AppDB.Models.Status", b =>
+                {
+                    b.Navigation("StatusOrders");
                 });
 
             modelBuilder.Entity("AppDB.Models.Users", b =>
