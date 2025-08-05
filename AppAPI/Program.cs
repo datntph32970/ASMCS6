@@ -6,6 +6,8 @@ using AppAPI.Repositories.OrderDetailsRepository;
 using AppAPI.Repositories.OrdersRepository;
 using AppAPI.Repositories.ProductsRepository;
 using AppAPI.Repositories.RolesRepository;
+using AppAPI.Repositories.StatusRepository;
+using AppAPI.Repositories.StatusOrdersRepository;
 using AppAPI.Repositories.UsersRepository;
 using AppAPI.Services.AuthService;
 using AppAPI.Services.CategoriesService;
@@ -17,6 +19,8 @@ using AppAPI.Services.OrderDetailsService;
 using AppAPI.Services.OrdersService;
 using AppAPI.Services.ProductsService;
 using AppAPI.Services.RolesService;
+using AppAPI.Services.StatusService;
+using AppAPI.Services.StatusOrdersService;
 using AppAPI.Services.UsersService;
 using AppDB;
 using AppDB.Models;
@@ -105,6 +109,8 @@ builder.Services.AddScoped<IBaseRepository<Orders>, BaseRepository<Orders>>();
 builder.Services.AddScoped<IBaseRepository<OrderDetails>, BaseRepository<OrderDetails>>();
 builder.Services.AddScoped<IBaseRepository<Combos>, BaseRepository<Combos>>();
 builder.Services.AddScoped<IBaseRepository<ComboDetails>, BaseRepository<ComboDetails>>();
+builder.Services.AddScoped<IBaseRepository<Status>, BaseRepository<Status>>();
+builder.Services.AddScoped<IBaseRepository<StatusOrders>, BaseRepository<StatusOrders>>();
 
 builder.Services.AddScoped<IUsersRepository, UsersRepository>();
 builder.Services.AddScoped<IRolesRepository, RolesRepository>();
@@ -114,6 +120,8 @@ builder.Services.AddScoped<IOrdersRepository, OrdersRepository>();
 builder.Services.AddScoped<IOrderDetailsRepository, OrderDetailsRepository>();
 builder.Services.AddScoped<ICombosRepository, CombosRepository>();
 builder.Services.AddScoped<IComboDetailsRepository, ComboDetailsRepository>();
+builder.Services.AddScoped<IStatusRepository, StatusRepository>();
+builder.Services.AddScoped<IStatusOrdersRepository, StatusOrdersRepository>();
 
 // Register Services
 builder.Services.AddScoped<IJwtService, JwtService>();
@@ -126,6 +134,8 @@ builder.Services.AddScoped<IOrdersService, OrdersService>();
 builder.Services.AddScoped<IOrderDetailsService, OrderDetailsService>();
 builder.Services.AddScoped<ICombosService, CombosService>();
 builder.Services.AddScoped<IComboDetailsService, ComboDetailsService>();
+builder.Services.AddScoped<IStatusService, StatusService>();
+builder.Services.AddScoped<IStatusOrdersService, StatusOrdersService>();
 
 var app = builder.Build();
 

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Hinet.Service.Common
+namespace AppAPI.Services.BaseServices
 {
     public class UploadFileHelper
     {
