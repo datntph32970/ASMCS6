@@ -1,0 +1,67 @@
+@model AppDB.Models.DtoAndViewModels.CategoriesService.Dto.CategoriesDto
+
+@{
+    ViewData["Title"] = "Category Details";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Category Details</h3>
+                    <div class="card-tools">
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to List
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                            <div class="alert alert-danger alert-dismissible">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                @TempData["ErrorMessage"]
+                            </div>
+                    }
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <dl class="row">
+                                <dt class="col-sm-4">Category Name:</dt>
+                                <dd class="col-sm-8">@Model.CategoryName</dd>
+
+                                <dt class="col-sm-4">Description:</dt>
+                                <dd class="col-sm-8">@Model.Description</dd>
+
+                                <dt class="col-sm-4">Created Date:</dt>
+                                <dd class="col-sm-8">@Model.createdDate.ToString("dd/MM/yyyy HH:mm")</dd>
+
+                                <dt class="col-sm-4">Created By:</dt>
+                                <dd class="col-sm-8">@Model.createdByName</dd>
+
+                                @if (Model.updatedDate.HasValue)
+                                {
+                                        <dt class="col-sm-4">Updated Date:</dt>
+                                        <dd class="col-sm-8">@Model.updatedDate.Value.ToString("dd/MM/yyyy HH:mm")</dd>
+
+                                        <dt class="col-sm-4">Updated By:</dt>
+                                        <dd class="col-sm-8">@Model.updatedByName</dd>
+                                }
+                            </dl>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <a asp-action="Edit" asp-route-id="@Model.id" class="btn btn-warning">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to List
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

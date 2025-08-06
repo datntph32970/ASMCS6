@@ -135,7 +135,14 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
-
+//cors
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins",
+        builder => builder.AllowAnyOrigin()
+                          .AllowAnyMethod()
+                          .AllowAnyHeader());
+});
 // Add HttpContextAccessor
 builder.Services.AddHttpContextAccessor();
 
@@ -206,6 +213,7 @@ app.UseCors(x => x
     .AllowAnyOrigin()
     .AllowAnyMethod()
     .AllowAnyHeader());
+app.UseCors("AllowAllOrigins");
 
 app.UseAuthentication();
 app.UseAuthorization();

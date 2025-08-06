@@ -1,6 +1,9 @@
 using AppAPI.Services.AuthService;
 using AppAPI.Services.AuthService.ViewModels;
+using AppDB.Models.DtoAndViewModels.AuthService.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using AuthResponse = AppAPI.Services.AuthService.ViewModels.AuthResponse;
+using LoginRequest = AppAPI.Services.AuthService.ViewModels.LoginRequest;
 
 namespace AppAPI.Controllers
 {
@@ -16,7 +19,7 @@ namespace AppAPI.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<AuthResponse>> Login([FromBody] LoginRequest request)
+        public async Task<ActionResult<ApiResponse<AuthResponse>>> Login([FromBody] LoginRequest request)
         {
             if (!ModelState.IsValid)
             {

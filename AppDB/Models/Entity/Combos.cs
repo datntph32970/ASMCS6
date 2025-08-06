@@ -10,7 +10,7 @@ namespace AppDB.Models.Entity
     {
         public string ComboName { get; set; }
         public string? Description { get; set; }
-        public string Price { get; set; }
+        public decimal Price { get; set; }
         public string ImageURL { get; set; }
         public virtual ICollection<ComboDetails> ComboDetails { get; set; } = new List<ComboDetails>();
         public virtual ICollection<OrderDetails> OrderDetails { get; set; } = new List<OrderDetails>();
