@@ -21,6 +21,47 @@ body {
   margin-bottom: 60px;
 }
 
+/* Sidebar styles */
+.sidebar {
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+
+.sidebar .nav-link {
+    border-radius: 5px;
+    margin-bottom: 5px;
+    transition: all 0.3s ease;
+}
+
+.sidebar .nav-link:hover {
+    background-color: rgba(255,255,255,0.1);
+    transform: translateX(5px);
+}
+
+.sidebar .nav-link.active {
+    background-color: #007bff;
+}
+
+.user-info {
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.user-name {
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+/* Responsive sidebar */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100% !important;
+        min-height: auto !important;
+    }
+    
+    .d-flex {
+        flex-direction: column;
+    }
+}
+
 /* Toast notification styles */
 .toast {
     border-radius: 8px;

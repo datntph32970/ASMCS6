@@ -3,6 +3,14 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+// Thêm Session
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(60);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
 // Đăng ký AuthService sử dụng HttpClient và cấu hình BaseUrl từ appsettings
 builder.Services.AddHttpClient<IAuthService, AuthService>();
 
@@ -20,6 +28,9 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+// Thêm Session middleware
+app.UseSession();
 
 app.UseAuthorization();
 

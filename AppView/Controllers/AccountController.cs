@@ -27,10 +27,14 @@ public class AccountController : Controller
             ModelState.AddModelError(string.Empty, result.Message);
             return View(model);
         }
-        // Lưu token vào session/cookie nếu cần
-        // HttpContext.Session.SetString("Token", result.Data.Token);
+        // Lưu thông tin người dùng vào session
+        HttpContext.Session.SetString("Token", result.Data.Token);
+        HttpContext.Session.SetString("UserName", result.Data.User.FullName);
+        HttpContext.Session.SetString("UserRole", result.Data.User.RoleName);
+        HttpContext.Session.SetString("UserId", result.Data.User.Id.ToString());
+
         TempData["ToastMessage"] = "Đăng nhập thành công!";
-        TempData["ToastType"] = "success"; // hoặc "danger", "info", "warning"
+        TempData["ToastType"] = "success";
         return RedirectToAction("Index", "Home");
     }
 
@@ -45,25 +49,25 @@ public class AccountController : Controller
     {
         if (!ModelState.IsValid)
             return View(model);
-
-        try
+        var result = await _authService.RegisterAsync(model);
+        if (!result.Success)
         {
-            var result = await _authService.RegisterAsync(model);
-            if (!result.Success)
-            {
-                TempData["ToastMessage"] = result.Message;
-                TempData["ToastType"] = "danger";
-                return View(model);
-            }
-            TempData["ToastMessage"] = "Đăng ký thành công! Vui lòng đăng nhập.";
-            TempData["ToastType"] = "success";
-            return RedirectToAction("Login");
-        }
-        catch (Exception ex)
-        {
-            TempData["ToastMessage"] = "Đăng ký thất bại: " + ex.Message;
+            TempData["ToastMessage"] = result.Message;
             TempData["ToastType"] = "danger";
             return View(model);
         }
+        TempData["ToastMessage"] = "Đăng ký thành công! Vui lòng đăng nhập.";
+        TempData["ToastType"] = "success";
+        return RedirectToAction("Login");
+    }
+
+    [HttpGet]
+    public IActionResult Logout()
+    {
+        // Xóa thông tin session
+        HttpContext.Session.Clear();
+        TempData["ToastMessage"] = "Đã đăng xuất thành công!";
+        TempData["ToastType"] = "info";
+        return RedirectToAction("Login");
     }
 }
