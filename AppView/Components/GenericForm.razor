@@ -1,3 +1,4 @@
+@using AppView.Components.Models
 @typeparam TModel
 
 <EditForm Model="Model" OnValidSubmit="OnValidSubmit">
@@ -29,14 +30,4 @@
     [Parameter] public TModel Model { get; set; } = default!;
     [Parameter] public List<FormFieldConfig<TModel>> Fields { get; set; } = new();
     [Parameter] public EventCallback OnValidSubmit { get; set; }
-}
-
-@code {
-    public class FormFieldConfig<T>
-    {
-        public string Label { get; set; } = string.Empty;
-        public Func<T, string> ValueGetter { get; set; } = _ => string.Empty;
-        public Action<T, string>? ValueSetter { get; set; }
-        public RenderFragment<T>? Template { get; set; }
-    }
 }

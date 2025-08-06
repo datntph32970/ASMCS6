@@ -1,3 +1,4 @@
+@using AppView.Components.Models
 @typeparam TItem
 
 <table class="table table-bordered">
@@ -56,13 +57,4 @@
     [Parameter] public List<ColumnConfig<TItem>> Columns { get; set; } = new();
     [Parameter] public EventCallback<TItem> OnEdit { get; set; }
     [Parameter] public EventCallback<TItem> OnDelete { get; set; }
-}
-
-@code {
-    public class ColumnConfig<T>
-    {
-        public string Header { get; set; } = string.Empty;
-        public Func<T, object?> FieldSelector { get; set; } = _ => null!;
-        public RenderFragment<T>? Template { get; set; }
-    }
 }
