@@ -1,5 +1,6 @@
 @page "/categories"
 @inject HttpClient Http
+@using AppDB.Models.DtoAndViewModels.BaseServices.Common
 @using AppDB.Models.DtoAndViewModels.CategoriesService.Dto
 @using AppDB.Models.DtoAndViewModels.CategoriesService.ViewModels
 @using AppView.Components
@@ -14,15 +15,12 @@
 <GenericModal Title="Sửa danh mục" Visible="showEdit" OnClose="HideEditModal">
     <GenericForm TModel="CategoriesUpdateVM" Model="editModel" Fields="editFields" OnValidSubmit="EditCategory" />
 </GenericModal>
-<ConfirmDialog Message="Bạn có chắc muốn xóa danh mục này?" Visible="showConfirm" OnConfirm="ConfirmDelete" OnCancel="HideConfirm" />
+<ConfirmDialog Message="Bạn có chắc muốn xóa danh mục này?" Visible="showConfirm" OnConfirm="ConfirmDelete"
+    OnCancel="HideConfirm" />
 
 <button class="btn btn-success mb-2" @onclick="ShowAdd">Thêm danh mục</button>
 
-<GenericTable TItem="CategoriesDto"
-              Items="categories"
-              Columns="columns"
-              OnEdit="ShowEdit"
-              OnDelete="AskDelete" />
+<GenericTable TItem="CategoriesDto" Items="categories" Columns="columns" OnEdit="ShowEdit" OnDelete="AskDelete" />
 
 <Pagination TotalPages="totalPages" CurrentPage="page" OnPageChanged="ChangePage" />
 
@@ -46,29 +44,41 @@
     protected override async Task OnInitializedAsync()
     {
         columns = new()
-        {
-            new ColumnConfig<CategoriesDto> { Header = "Tên danh mục", FieldSelector = c => c.CategoryName },
-            new ColumnConfig<CategoriesDto> { Header = "Mô tả", FieldSelector = c => c.Description ?? "" }
-        };
+{
+new ColumnConfig<CategoriesDto> { Header = "Tên danh mục", FieldSelector = c => c.CategoryName },
+new ColumnConfig<CategoriesDto> { Header = "Mô tả", FieldSelector = c => c.Description ?? "" }
+};
         addFields = new()
-        {
-            new FormFieldConfig<CategoriesCreateVM> { Label = "Tên danh mục", ValueGetter = m => m.CategoryName, ValueSetter = (m, v) => m.CategoryName = v },
-            new FormFieldConfig<CategoriesCreateVM> { Label = "Mô tả", ValueGetter = m => m.Description, ValueSetter = (m, v) => m.Description = v }
-        };
+{
+new FormFieldConfig<CategoriesCreateVM> { Label = "Tên danh mục", ValueGetter = m => m.CategoryName, ValueSetter = (m,
+v) => m.CategoryName = v },
+new FormFieldConfig<CategoriesCreateVM> { Label = "Mô tả", ValueGetter = m => m.Description, ValueSetter = (m, v) =>
+m.Description = v }
+};
         editFields = new()
-        {
-            new FormFieldConfig<CategoriesUpdateVM> { Label = "Tên danh mục", ValueGetter = m => m.CategoryName, ValueSetter = (m, v) => m.CategoryName = v },
-            new FormFieldConfig<CategoriesUpdateVM> { Label = "Mô tả", ValueGetter = m => m.Description, ValueSetter = (m, v) => m.Description = v }
-        };
+{
+new FormFieldConfig<CategoriesUpdateVM> { Label = "Tên danh mục", ValueGetter = m => m.CategoryName, ValueSetter = (m,
+v) => m.CategoryName = v },
+new FormFieldConfig<CategoriesUpdateVM> { Label = "Mô tả", ValueGetter = m => m.Description, ValueSetter = (m, v) =>
+m.Description = v }
+};
         await LoadCategories();
     }
 
     private async Task LoadCategories()
     {
-        // Demo: lấy toàn bộ, phân trang client. Có thể thay bằng API phân trang thực tế
-        var all = await Http.GetFromJsonAsync<List<CategoriesDto>>("/api/Categories");
-        totalPages = (int)Math.Ceiling((all?.Count ?? 0) / (double)pageSize);
-        categories = all?.Skip((page - 1) * pageSize).Take(pageSize).ToList() ?? new();
+        try
+        {
+            var apiResponse = await Http.GetFromJsonAsync<ApiResponse<PagedList<CategoriesDto>>>("/api/Categories");
+            var all = apiResponse?.Data ?? new PagedList<CategoriesDto>(new List<CategoriesDto>(), 1, pageSize, 0);
+            totalPages = (int)Math.Ceiling((all.TotalCount) / (double)pageSize);
+            categories = all.Items ?? new List<CategoriesDto>();
+        }
+        catch (Exception ex)
+        {
+            categories = new();
+            ShowToast?.Invoke($"Lỗi tải danh mục: {ex.Message}", "error");
+        }
         StateHasChanged();
     }
 

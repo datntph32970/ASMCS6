@@ -6,7 +6,16 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7294") });
+builder.Services.AddScoped<AppView.Services.AuthTokenHandler>();
+builder.Services.AddScoped(sp =>
+{
+    var handler = sp.GetRequiredService<AppView.Services.AuthTokenHandler>();
+    handler.InnerHandler = new HttpClientHandler();
+    return new HttpClient(handler)
+    {
+        BaseAddress = new Uri("https://localhost:7294")
+    };
+});
 builder.Services.AddScoped<AppView.Services.AuthService>();
 builder.Services.AddSingleton<AppView.Services.AuthState>();
 
