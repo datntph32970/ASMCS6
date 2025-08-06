@@ -7,6 +7,8 @@ using AppDB.Models.Entity;
 using AppDB.Models.DtoAndViewModels.ProductsService.ViewModels;
 using AppDB.Models.DtoAndViewModels.ProductsService.Dto;
 using AppAPI.Services.MapperService;
+using AppDB.Models.DtoAndViewModels.BaseServices.Common;
+using AppDB.Models.DtoAndViewModels.AuthService.ViewModels;
 
 namespace AppAPI.Controllers
 {
@@ -28,7 +30,7 @@ namespace AppAPI.Controllers
         public async Task<IActionResult> GetProducts([FromQuery] ProductsSearch search)
         {
             var result = await _productsService.GetData(search);
-            return Ok(result);
+            return Ok(ApiResponse<PagedList<ProductsDto>>.Ok(result, "Lấy danh sách sản phẩm thành công"));
         }
 
         [HttpGet("{id}")]
@@ -37,7 +39,7 @@ namespace AppAPI.Controllers
             var result = await _productsService.GetDto(id);
             if (result == null)
                 return NotFound();
-            return Ok(result);
+            return Ok(ApiResponse<ProductsDto>.Ok(result, "Lấy thông tin sản phẩm thành công"));
         }
 
         [HttpPost]
@@ -45,8 +47,7 @@ namespace AppAPI.Controllers
         public async Task<IActionResult> CreateProduct([FromForm] ProductsCreateVM request)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
+                return BadRequest(ApiResponse<ProductsCreateVM>.Error("Dữ liệu không hợp lệ"));
 
             var product = _mapper.Map<ProductsCreateVM,Products>(request);
             if (request.Image != null)
@@ -68,7 +69,7 @@ namespace AppAPI.Controllers
         public async Task<IActionResult> UpdateProduct( [FromForm] ProductsUpdateVM request)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+                return BadRequest(ApiResponse<ProductsUpdateVM>.Error("Dữ liệu không hợp lệ"));
 
             var product = await _productsService.GetByIdAsync(request.Id);
             if (product == null)
@@ -85,7 +86,7 @@ namespace AppAPI.Controllers
                 product.ImageURL = imagePath;
             }
             await _productsService.UpdateAsync(product);
-            return Ok(product);
+            return Ok(ApiResponse<ProductsUpdateVM>.Ok(request, "Cập nhật sản phẩm thành công"));
         }
 
         [HttpDelete("{id}")]
@@ -96,7 +97,7 @@ namespace AppAPI.Controllers
             if (product == null)
                 return NotFound();
             await _productsService.DeleteAsync(product);
-            return NoContent();
+            return Ok(ApiResponse<string>.Ok("Xóa sản phẩm thành công", "Sản phẩm đã được xóa thành công"));
         }
     }
 }

@@ -6,6 +6,8 @@ using AppDB.Models.Entity;
 using AppDB.Models.DtoAndViewModels.StatusOrdersService.ViewModels;
 using AppDB.Models.DtoAndViewModels.StatusOrdersService.Dto;
 using AppAPI.Services.MapperService;
+using AppDB.Models.DtoAndViewModels.BaseServices.Common;
+using AppDB.Models.DtoAndViewModels.AuthService.ViewModels;
 
 namespace AppAPI.Controllers
 {
@@ -27,7 +29,7 @@ namespace AppAPI.Controllers
         public async Task<IActionResult> GetStatusOrders([FromQuery] StatusOrdersSearch search)
         {
             var result = await _statusOrdersService.GetData(search);
-            return Ok(result);
+            return Ok(ApiResponse<PagedList<StatusOrdersDto>>.Ok(result, "Lấy danh sách trạng thái đơn hàng thành công"));
         }
 
         [HttpGet("{id}")]
@@ -36,7 +38,7 @@ namespace AppAPI.Controllers
             var result = await _statusOrdersService.GetDto(id);
             if (result == null)
                 return NotFound();
-            return Ok(result);
+            return Ok(ApiResponse<StatusOrdersDto>.Ok(result, "Lấy thông tin trạng thái đơn hàng thành công"));
         }
 
         [HttpPost]
@@ -44,7 +46,7 @@ namespace AppAPI.Controllers
         public async Task<IActionResult> CreateStatusOrder([FromBody] StatusOrdersCreateVM request)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+                return BadRequest(ApiResponse<StatusOrdersCreateVM>.Error("Dữ liệu không hợp lệ"));
             var statusOrder = _mapper.Map<StatusOrdersCreateVM,StatusOrders>(request);
             await _statusOrdersService.CreateAsync(statusOrder);
             return CreatedAtAction(nameof(GetStatusOrder), new { id = statusOrder.id }, statusOrder);
@@ -55,13 +57,13 @@ namespace AppAPI.Controllers
         public async Task<IActionResult> UpdateStatusOrder([FromBody] StatusOrdersUpdateVM request)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+                return BadRequest(ApiResponse<StatusOrdersUpdateVM>.Error("Dữ liệu không hợp lệ"));
             var statusOrder = await _statusOrdersService.GetByIdAsync(request.id);
             if (statusOrder == null)
                 return NotFound();
             _mapper.Map(request, statusOrder);
             await _statusOrdersService.UpdateAsync(statusOrder);
-            return Ok(statusOrder);
+            return Ok(ApiResponse<StatusOrdersUpdateVM>.Ok(request, "Cập nhật trạng thái đơn hàng thành công"));
         }
 
         [HttpDelete("{id}")]
@@ -72,7 +74,7 @@ namespace AppAPI.Controllers
             if (statusOrder == null)
                 return NotFound();
             await _statusOrdersService.DeleteAsync(statusOrder);
-            return NoContent();
+            return Ok(ApiResponse<StatusOrdersDto>.Ok(null, "Xóa trạng thái đơn hàng thành công"));
         }
     }
 } 

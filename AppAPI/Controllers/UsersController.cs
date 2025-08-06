@@ -1,6 +1,9 @@
 using AppAPI.Attributes;
 using AppAPI.Services.MapperService;
 using AppAPI.Services.UsersService;
+using AppDB.Models.DtoAndViewModels.AuthService.ViewModels;
+using AppDB.Models.DtoAndViewModels.BaseServices.Common;
+using AppDB.Models.DtoAndViewModels.UsersService.Dto;
 using AppDB.Models.DtoAndViewModels.UsersService.ViewModels;
 using AppDB.Models.Entity;
 using Microsoft.AspNetCore.Authorization;
@@ -27,7 +30,7 @@ namespace AppAPI.Controllers
         public async Task<IActionResult> GetUsers([FromQuery] UsersSearch search)
         {
             var result = await _usersService.GetData(search);
-            return Ok(result);
+            return Ok(ApiResponse<PagedList<UsersDto>>.Ok(result,"Lấy danh sách thành công"));
         }
 
         [HttpGet("{id}")]
@@ -36,8 +39,7 @@ namespace AppAPI.Controllers
             var result = await _usersService.GetDto(id);
             if (result == null)
                 return NotFound();
-
-            return Ok(result);
+            return Ok(ApiResponse<UsersDto>.Ok(result, "Lấy thông tin người dùng thành công"));
         }
 
         [HttpPost]
@@ -45,7 +47,7 @@ namespace AppAPI.Controllers
         public async Task<IActionResult> CreateUser([FromBody] UsersCreateVM request)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+                return BadRequest(ApiResponse<UsersCreateVM>.Error("Dữ liệu không hợp lệ"));
             var entity = _mapper.Map<UsersCreateVM, Users>(request);
             await _usersService.CreateAsync(entity);
             return CreatedAtAction(nameof(GetUser), new { id = entity.id }, entity);
@@ -55,14 +57,14 @@ namespace AppAPI.Controllers
         public async Task<IActionResult> UpdateUser([FromBody] UsersUpdateVM request)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+                return BadRequest(ApiResponse<UsersUpdateVM>.Error("Dữ liệu không hợp lệ"));
             var existingUser = await _usersService.GetByIdAsync(request.Id);
             if (existingUser == null)
                 return NotFound();
             // Map the request to the existing user entity
             var entity = _mapper.Map<UsersUpdateVM, Users>(request, existingUser);
             await _usersService.UpdateAsync(entity);
-            return Ok(entity);
+            return Ok(ApiResponse<UsersUpdateVM>.Ok(request, "Cập nhật người dùng thành công"));
         }
 
         [HttpDelete("{id}")]
@@ -73,7 +75,7 @@ namespace AppAPI.Controllers
             if (existingUser == null)
                 return NotFound();
              await _usersService.DeleteAsync(existingUser);
-            return NoContent();
+            return Ok(ApiResponse<UsersDto>.Ok(null, "Xóa người dùng thành công"));
         }
     }
 }

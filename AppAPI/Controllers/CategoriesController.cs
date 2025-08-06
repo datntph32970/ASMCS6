@@ -6,6 +6,8 @@ using AppDB.Models.Entity;
 using AppDB.Models.DtoAndViewModels.CategoriesService.ViewModels;
 using AppDB.Models.DtoAndViewModels.CategoriesService.Dto;
 using AppAPI.Services.MapperService;
+using AppDB.Models.DtoAndViewModels.AuthService.ViewModels;
+using AppDB.Models.DtoAndViewModels.BaseServices.Common;
 
 namespace AppAPI.Controllers
 {
@@ -27,7 +29,7 @@ namespace AppAPI.Controllers
         public async Task<IActionResult> GetCategories([FromQuery] CategoriesSearch search)
         {
             var result = await _categoriesService.GetData(search);
-            return Ok(result);
+            return Ok(ApiResponse<PagedList<CategoriesDto>>.Ok(result, "Lấy danh sách danh mục thành công"));    
         }
 
         [HttpGet("{id}")]
@@ -36,7 +38,7 @@ namespace AppAPI.Controllers
             var result = await _categoriesService.GetDto(id);
             if (result == null)
                 return NotFound();
-            return Ok(result);
+            return Ok(ApiResponse<CategoriesDto>.Ok(result, "Lấy thông tin danh mục thành công"));
         }
 
         [HttpPost]
@@ -44,7 +46,7 @@ namespace AppAPI.Controllers
         public async Task<IActionResult> CreateCategory([FromBody] CategoriesCreateVM request)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+                return BadRequest(ApiResponse<CategoriesCreateVM>.Error("Dữ liệu không hợp lệ"));
             var category = _mapper.Map<CategoriesCreateVM,Categories>(request);
             await _categoriesService.CreateAsync(category);
             return CreatedAtAction(nameof(GetCategory), new { id = category.id }, category);
@@ -55,13 +57,13 @@ namespace AppAPI.Controllers
         public async Task<IActionResult> UpdateCategory([FromBody] CategoriesUpdateVM request)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+                return BadRequest(ApiResponse<CategoriesCreateVM>.Error("Dữ liệu không hợp lệ"));
             var category = await _categoriesService.GetByIdAsync(request.Id);
             if (category == null)
                 return NotFound();
             _mapper.Map(request, category);
             await _categoriesService.UpdateAsync(category);
-            return Ok(category);
+            return Ok(ApiResponse<CategoriesUpdateVM>.Ok(request, "Cập nhật danh mục thành công"));
         }
 
         [HttpDelete("{id}")]
@@ -72,7 +74,7 @@ namespace AppAPI.Controllers
             if (category == null)
                 return NotFound();
             await _categoriesService.DeleteAsync(category);
-            return NoContent();
+            return Ok(ApiResponse<string>.Ok(null, "Xóa danh mục thành công"));
         }
     }
 }

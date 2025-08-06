@@ -6,6 +6,8 @@ using AppDB.Models.Entity;
 using AppDB.Models.DtoAndViewModels.ComboDetailsService.ViewModels;
 using AppDB.Models.DtoAndViewModels.ComboDetailsService.Dto;
 using AppAPI.Services.MapperService;
+using AppDB.Models.DtoAndViewModels.AuthService.ViewModels;
+using AppDB.Models.DtoAndViewModels.BaseServices.Common;
 
 namespace AppAPI.Controllers
 {
@@ -27,7 +29,7 @@ namespace AppAPI.Controllers
         public async Task<IActionResult> GetComboDetails([FromQuery] ComboDetailsSearch search)
         {
             var result = await _comboDetailsService.GetData(search);
-            return Ok(result);
+            return Ok(ApiResponse<PagedList<ComboDetailsDto>>.Ok(result, "Lấy danh sách chi tiết combo thành công"));
         }
 
         [HttpGet("{id}")]
@@ -36,7 +38,7 @@ namespace AppAPI.Controllers
             var result = await _comboDetailsService.GetDto(id);
             if (result == null)
                 return NotFound();
-            return Ok(result);
+            return Ok(ApiResponse<ComboDetailsDto>.Ok(result, "Lấy thông tin chi tiết combo thành công"));
         }
 
         [HttpPost]
@@ -44,7 +46,7 @@ namespace AppAPI.Controllers
         public async Task<IActionResult> CreateComboDetail([FromBody] ComboDetailsCreateVM request)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+                return BadRequest(ApiResponse<ComboDetailsCreateVM>.Error("Dữ liệu không hợp lệ"));
             var detail = _mapper.Map<ComboDetailsCreateVM,ComboDetails>(request);
             await _comboDetailsService.CreateAsync(detail);
             return CreatedAtAction(nameof(GetComboDetail), new { id = detail.id }, detail);
@@ -61,7 +63,7 @@ namespace AppAPI.Controllers
                 return NotFound();
             _mapper.Map(request, detail);
             await _comboDetailsService.UpdateAsync(detail);
-            return Ok(detail);
+            return Ok(ApiResponse<ComboDetailsUpdateVM>.Ok(request, "Cập nhật chi tiết combo thành công"));
         }
 
         [HttpDelete("{id}")]
@@ -72,7 +74,7 @@ namespace AppAPI.Controllers
             if (detail == null)
                 return NotFound();
             await _comboDetailsService.DeleteAsync(detail);
-            return NoContent();
+            return Ok(ApiResponse<string>.Ok(null, "Xóa chi tiết combo thành công"));
         }
     }
 }

@@ -2,6 +2,8 @@ using AppAPI.Attributes;
 using AppAPI.Services.BaseServices;
 using AppAPI.Services.CombosService;
 using AppAPI.Services.MapperService;
+using AppDB.Models.DtoAndViewModels.AuthService.ViewModels;
+using AppDB.Models.DtoAndViewModels.BaseServices.Common;
 using AppDB.Models.DtoAndViewModels.CombosService.Dto;
 using AppDB.Models.DtoAndViewModels.CombosService.ViewModels;
 using AppDB.Models.Entity;
@@ -29,7 +31,7 @@ namespace AppAPI.Controllers
         public async Task<IActionResult> GetCombos([FromQuery] CombosSearch search)
         {
             var result = await _combosService.GetData(search);
-            return Ok(result);
+            return Ok(ApiResponse<PagedList<CombosDto>>.Ok(result, "Lấy danh sách combo thành công"));
         }
 
         [HttpGet("{id}")]
@@ -38,7 +40,7 @@ namespace AppAPI.Controllers
             var result = await _combosService.GetDto(id);
             if (result == null)
                 return NotFound();
-            return Ok(result);
+            return Ok(ApiResponse<CombosDto>.Ok(result, "Lấy thông tin combo thành công"));
         }
 
         [HttpPost]
@@ -46,8 +48,8 @@ namespace AppAPI.Controllers
         public async Task<IActionResult> CreateCombo([FromForm] CombosCreateVM request)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            
+                return BadRequest(ApiResponse<CombosCreateVM>.Error("Dữ liệu không hợp lệ"));
+
             var combo = _mapper.Map<CombosCreateVM,Combos>(request);
             if (request.Image != null)
             {
@@ -67,7 +69,7 @@ namespace AppAPI.Controllers
         public async Task<IActionResult> UpdateCombo([FromForm] CombosUpdateVM request)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+                return BadRequest(ApiResponse<CombosUpdateVM>.Error("Dữ liệu không hợp lệ"));
             var combo = await _combosService.GetByIdAsync(request.Id);
             if (combo == null)
                 return NotFound();
@@ -82,7 +84,7 @@ namespace AppAPI.Controllers
                 combo.ImageURL = imagePath;
             }
             await _combosService.UpdateAsync(combo);
-            return Ok(combo);
+            return Ok(ApiResponse<CombosUpdateVM>.Ok(request, "Cập nhật combo thành công"));
         }
 
         [HttpDelete("{id}")]
@@ -93,7 +95,7 @@ namespace AppAPI.Controllers
             if (combo == null)
                 return NotFound();
             await _combosService.DeleteAsync(combo);
-            return NoContent();
+            return Ok(ApiResponse<CombosDto>.Ok(null, "Xóa combo thành công"));
         }
     }
 }

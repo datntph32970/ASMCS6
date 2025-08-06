@@ -20,7 +20,7 @@ namespace AppAPI.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(ApiResponse<AuthResponse>.Error("Invalid login request"));    
             }
 
             var result = await _authService.LoginAsync(request);
@@ -38,7 +38,7 @@ namespace AppAPI.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(ApiResponse<AuthResponse>.Error("Invalid registration request"));
             }
 
             var result = await _authService.RegisterAsync(request);

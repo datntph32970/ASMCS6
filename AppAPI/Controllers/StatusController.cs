@@ -6,6 +6,8 @@ using AppDB.Models.Entity;
 using AppDB.Models.DtoAndViewModels.StatusService.ViewModels;
 using AppDB.Models.DtoAndViewModels.StatusService.Dto;
 using AppAPI.Services.MapperService;
+using AppDB.Models.DtoAndViewModels.BaseServices.Common;
+using AppDB.Models.DtoAndViewModels.AuthService.ViewModels;
 
 namespace AppAPI.Controllers
 {
@@ -27,7 +29,7 @@ namespace AppAPI.Controllers
         public async Task<IActionResult> GetStatuses([FromQuery] StatusSearch search)
         {
             var result = await _statusService.GetData(search);
-            return Ok(result);
+            return Ok(ApiResponse<PagedList<StatusDto>>.Ok(result, "Lấy danh sách trạng thái thành công"));
         }
 
         [HttpGet("{id}")]
@@ -36,7 +38,7 @@ namespace AppAPI.Controllers
             var result = await _statusService.GetDto(id);
             if (result == null)
                 return NotFound();
-            return Ok(result);
+            return Ok(ApiResponse<StatusDto>.Ok(result, "Lấy thông tin trạng thái thành công"));
         }
 
         [HttpPost]
@@ -44,7 +46,7 @@ namespace AppAPI.Controllers
         public async Task<IActionResult> CreateStatus([FromBody] StatusCreateVM request)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+                return BadRequest(ApiResponse<StatusCreateVM>.Error("Dữ liệu không hợp lệ"));
             var status = _mapper.Map<StatusCreateVM,Status>(request);
             await _statusService.CreateAsync(status);
             return CreatedAtAction(nameof(GetStatus), new { id = status.id }, status);
@@ -55,13 +57,13 @@ namespace AppAPI.Controllers
         public async Task<IActionResult> UpdateStatus([FromBody] StatusUpdateVM request)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+                return BadRequest(ApiResponse<StatusUpdateVM>.Error("Dữ liệu không hợp lệ"));
             var status = await _statusService.GetByIdAsync(request.id);
             if (status == null)
                 return NotFound();
             _mapper.Map(request, status);
             await _statusService.UpdateAsync(status);
-            return Ok(status);
+            return Ok(ApiResponse<StatusUpdateVM>.Ok(request, "Cập nhật trạng thái thành công"));
         }
 
         [HttpDelete("{id}")]
@@ -72,7 +74,7 @@ namespace AppAPI.Controllers
             if (status == null)
                 return NotFound();
             await _statusService.DeleteAsync(status);
-            return NoContent();
+            return Ok (ApiResponse<StatusDto>.Ok(null, "Xóa trạng thái thành công"));
         }
     }
 }
