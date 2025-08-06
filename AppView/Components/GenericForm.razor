@@ -16,9 +16,8 @@
                 }
                 else
                 {
-                    <InputText class="form-control" Value="@field.ValueGetter(Model)"
-                        ValueChanged="e => field.ValueSetter?.Invoke(Model, e?.ToString() ?? string.Empty)"
-                        ValueExpression="null" />
+                    <InputText class="form-control" value="@field.ValueGetter(Model)"
+                        @oninput="e => field.ValueSetter?.Invoke(Model, e.Value?.ToString() ?? string.Empty)" />
                 }
             </div>
         }
