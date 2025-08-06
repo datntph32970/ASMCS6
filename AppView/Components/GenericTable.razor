@@ -1,0 +1,68 @@
+@typeparam TItem
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            @foreach (var col in Columns)
+            {
+                <th>@col.Header</th>
+            }
+            @if (OnEdit.HasDelegate || OnDelete.HasDelegate)
+            {
+                <th>Hành động</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @if (Items != null)
+        {
+            @foreach (var item in Items)
+            {
+                <tr>
+                    @foreach (var col in Columns)
+                    {
+                        <td>
+                            @if (col.Template != null)
+                            {
+                                @col.Template(item)
+                            }
+                            else
+                            {
+                                @col.FieldSelector(item)
+                            }
+                        </td>
+                    }
+                    @if (OnEdit.HasDelegate || OnDelete.HasDelegate)
+                    {
+                        <td>
+                            @if (OnEdit.HasDelegate)
+                            {
+                                <button class="btn btn-primary btn-sm me-2" @onclick="() => OnEdit.InvokeAsync(item)">Sửa</button>
+                            }
+                            @if (OnDelete.HasDelegate)
+                            {
+                                <button class="btn btn-danger btn-sm" @onclick="() => OnDelete.InvokeAsync(item)">Xóa</button>
+                            }
+                        </td>
+                    }
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+@code {
+    [Parameter] public IEnumerable<TItem>? Items { get; set; }
+    [Parameter] public List<ColumnConfig<TItem>> Columns { get; set; } = new();
+    [Parameter] public EventCallback<TItem> OnEdit { get; set; }
+    [Parameter] public EventCallback<TItem> OnDelete { get; set; }
+}
+
+@code {
+    public class ColumnConfig<T>
+    {
+        public string Header { get; set; } = string.Empty;
+        public Func<T, object?> FieldSelector { get; set; } = _ => null!;
+        public RenderFragment<T>? Template { get; set; }
+    }
+}

@@ -1,0 +1,44 @@
+@typeparam TFilter
+
+<EditForm Model="Filter" OnValidSubmit="() => OnFilterChanged.InvokeAsync()">
+    <div class="row">
+        @if (Fields != null && Fields.Count > 0)
+        {
+            @foreach (var field in Fields)
+            {
+                <div class="col mb-2">
+                    <label>@field.Label</label>
+                    @if (field.Template != null)
+                    {
+                        @field.Template(Filter)
+                    }
+                    else
+                    {
+                        <InputText class="form-control" Value="@field.ValueGetter(Filter)"
+                            ValueChanged="e => field.ValueSetter?.Invoke(Filter, e?.ToString() ?? string.Empty)"
+                            ValueExpression="null" />
+                    }
+                </div>
+            }
+        }
+        <div class="col-auto align-self-end">
+            <button class="btn btn-secondary" type="submit">Tìm kiếm</button>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter] public TFilter Filter { get; set; } = default!;
+    [Parameter] public List<FormFieldConfig<TFilter>> Fields { get; set; } = new();
+    [Parameter] public EventCallback OnFilterChanged { get; set; }
+}
+
+@code {
+    public class FormFieldConfig<T>
+    {
+        public string Label { get; set; } = string.Empty;
+        public Func<T, string> ValueGetter { get; set; } = _ => string.Empty;
+        public Action<T, string>? ValueSetter { get; set; }
+        public RenderFragment<T>? Template { get; set; }
+    }
+}
