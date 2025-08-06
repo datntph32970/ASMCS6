@@ -8,5 +8,6 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7294") });
 builder.Services.AddScoped<AppView.Services.AuthService>();
+builder.Services.AddSingleton<AppView.Services.AuthState>();
 
 await builder.Build().RunAsync();

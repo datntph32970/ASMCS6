@@ -1,3 +1,4 @@
+using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text.Json;
@@ -6,6 +7,12 @@ using AppDB.Models.DtoAndViewModels.AuthService.ViewModels;
 
 namespace AppView.Services
 {
+    public class AuthState
+    {
+        public event Action? OnAuthStateChanged;
+        public void NotifyAuthStateChanged() => OnAuthStateChanged?.Invoke();
+    }
+
     public class AuthService
     {
         private readonly IJSRuntime _js;

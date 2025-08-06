@@ -1,6 +1,7 @@
 @page "/login"
 @inject HttpClient Http
 @inject NavigationManager Navigation
+@inject AppView.Services.AuthState AuthState
 
 <h3>Đăng nhập</h3>
 
@@ -36,6 +37,7 @@
                 if (apiResponse?.Success == true && !string.IsNullOrEmpty(apiResponse.Data?.Token))
                 {
                     await JS.InvokeVoidAsync("localStorage.setItem", "token", apiResponse.Data.Token);
+                    AuthState.NotifyAuthStateChanged();
                     ShowToast?.Invoke("Đăng nhập thành công!", "success");
                     Navigation.NavigateTo("/");
                 }
