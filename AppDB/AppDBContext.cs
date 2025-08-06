@@ -103,6 +103,38 @@ namespace AppDB
                     createdByName = "System"
                 }
             );
+
+            // Seed Status
+            var statusDeliveredId = Guid.Parse("44444444-4444-4444-4444-444444444444");
+            var statusNotDeliveredId = Guid.Parse("55555555-5555-5555-5555-555555555555");
+            var statusDeliveringId = Guid.Parse("66666666-6666-6666-6666-666666666666");
+
+            modelBuilder.Entity<Status>().HasData(
+                new Status
+                {
+                    id = statusDeliveredId,
+                    Name = "Đã giao",
+                    createdDate = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                    createdById = adminRoleId,
+                    createdByName = "System"
+                },
+                new Status
+                {
+                    id = statusNotDeliveredId,
+                    Name = "Chưa giao",
+                    createdDate = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                    createdById = adminRoleId,
+                    createdByName = "System"
+                },
+                new Status
+                {
+                    id = statusDeliveringId,
+                    Name = "Đang giao",
+                    createdDate = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                    createdById = adminRoleId,
+                    createdByName = "System"
+                }
+            );
         }
 
         private string HashPassword(string password)

@@ -1,0 +1,161 @@
+@model AppDB.Models.DtoAndViewModels.BaseServices.Common.PagedList<AppDB.Models.DtoAndViewModels.CategoriesService.Dto.CategoriesDto>
+@{
+    ViewData["Title"] = "Quản lý Danh mục";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Quản lý Danh mục</h2>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Thêm danh mục
+    </a>
+</div>
+
+<!-- Search Form -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" asp-action="Index">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Tên danh mục:</label>
+                        <input type="text" name="categoryName" value="@ViewBag.Search.CategoryName" class="form-control" placeholder="Nhập tên danh mục...">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Mô tả:</label>
+                        <input type="text" name="description" value="@ViewBag.Search.Description" class="form-control" placeholder="Nhập mô tả...">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        <div>
+                            <button type="submit" class="btn btn-info">
+                                <i class="fas fa-search"></i> Tìm kiếm
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-refresh"></i> Làm mới
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Categories Table -->
+<div class="card">
+    <div class="card-body">
+        @if (Model.Items.Any())
+        {
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>STT</th>
+                                <th>Tên danh mục</th>
+                                <th>Mô tả</th>
+                                <th>Ngày tạo</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.Items.Count; i++)
+                            {
+                                    var category = Model.Items[i];
+                                    <tr>
+                                        <td>@((Model.PageIndex - 1) * Model.PageSize + i + 1)</td>
+                                        <td>@category.CategoryName</td>
+                                        <td>@(string.IsNullOrEmpty(category.Description) ? "Không có mô tả" : category.Description)</td>
+                                        <td>@category.createdDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                        <td>
+                                            <a asp-action="Edit" asp-route-id="@category.id" class="btn btn-warning btn-sm">
+                                                <i class="fas fa-edit"></i> Sửa
+                                            </a>
+                                            <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete('@category.id', '@category.CategoryName')">
+                                                <i class="fas fa-trash"></i> Xóa
+                                            </button>
+                                        </td>
+                                    </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                @if (Model.TotalPage > 1)
+                {
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center">
+                                @if (Model.PageIndex>1)
+                                {
+                                        <li class="page-item">
+                                            <a class="page-link" asp-action="Index" asp-route-pageNumber="@(Model.PageIndex - 1)" asp-route-categoryName="@ViewBag.Search.CategoryName" asp-route-description="@ViewBag.Search.Description">
+                                                <i class="fas fa-chevron-left"></i> Trước
+                                            </a>
+                                        </li>
+                                }
+
+                                @for (int i = 1; i <= Model.TotalPage; i++)
+                                {
+                            <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                                            <a class="page-link" asp-action="Index" asp-route-pageNumber="@i" asp-route-categoryName="@ViewBag.Search.CategoryName" asp-route-description="@ViewBag.Search.Description">@i</a>
+                                        </li>
+                                }
+
+                                @if (Model.PageIndex != Model.TotalPage)
+                                {
+                                        <li class="page-item">
+                                            <a class="page-link" asp-action="Index" asp-route-pageNumber="@(Model.PageIndex + 1)" asp-route-categoryName="@ViewBag.Search.CategoryName" asp-route-description="@ViewBag.Search.Description">
+                                                Sau <i class="fas fa-chevron-right"></i>
+                                            </a>
+                                        </li>
+                                }
+                            </ul>
+                        </nav>
+                }
+        }
+        else
+        {
+                <div class="text-center py-4">
+                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">Không có danh mục nào</h5>
+                    <p class="text-muted">Hãy thêm danh mục đầu tiên!</p>
+                </div>
+        }
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Xác nhận xóa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn xóa danh mục "<span id="categoryName"></span>"?</p>
+                <p class="text-danger"><small>Hành động này không thể hoàn tác!</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <form id="deleteForm" method="post" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">Xóa</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+        <script>
+            function confirmDelete(id, name) {
+                document.getElementById('categoryName').textContent = name;
+                document.getElementById('deleteForm').action = '/Categories/Delete/' + id;
+                new bootstrap.Modal(document.getElementById('deleteModal')).show();
+            }
+        </script>
+}

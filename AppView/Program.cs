@@ -1,7 +1,10 @@
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add<GlobalExceptionFilter>();
+});
 
 // Thêm Session
 builder.Services.AddSession(options =>
@@ -11,8 +14,15 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddTransient<AuthTokenHandler>();
+
 // Đăng ký AuthService sử dụng HttpClient và cấu hình BaseUrl từ appsettings
 builder.Services.AddHttpClient<IAuthService, AuthService>();
+
+// Đăng ký CategoryService sử dụng AuthTokenHandler
+builder.Services.AddHttpClient<ICategoryService, CategoryService>()
+    .AddHttpMessageHandler<AuthTokenHandler>();
 
 var app = builder.Build();
 
