@@ -42,7 +42,7 @@ namespace AppAPI.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var newRole = new AppDB.Models.Roles
+            var newRole = new AppDB.Models.Entity.Roles
             {
                 RoleName = request.RoleName
             };
@@ -51,14 +51,14 @@ namespace AppAPI.Controllers
             return CreatedAtAction(nameof(GetRole), new { id = newRole.id }, newRole);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut]
         [JwtAuthorize("Admin")]
-        public async Task<IActionResult> UpdateRole(Guid id, [FromBody] RolesUpdateVM request)
+        public async Task<IActionResult> UpdateRole( [FromBody] RolesUpdateVM request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var existingRole = await _rolesService.GetByIdAsync(id);
+            var existingRole = await _rolesService.GetByIdAsync(request.Id);
             if (existingRole == null)
                 return NotFound();
 

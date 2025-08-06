@@ -1,5 +1,5 @@
 using AppAPI.Services.JwtService.Dto;
-using AppDB.Models;
+using AppDB.Models.Entity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;

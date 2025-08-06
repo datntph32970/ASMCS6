@@ -1,4 +1,4 @@
-using AppDB.Models;
+using AppDB.Models.Entity;
 
 namespace AppAPI.Services.OrderDetailsService.Dto
 {

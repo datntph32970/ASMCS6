@@ -5,6 +5,7 @@ using AppAPI.Services.OrdersService.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
+using AppDB.Models.Entity;
 
 namespace AppAPI.Controllers
 {
@@ -44,19 +45,19 @@ namespace AppAPI.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var order = _mapper.Map<AppDB.Models.Orders>(request);
+            var order = _mapper.Map<Orders>(request);
             await _ordersService.CreateAsync(order);
             var dto = _mapper.Map<OrdersDto>(order);
             return CreatedAtAction(nameof(GetOrder), new { id = order.id }, dto);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut]
         [JwtAuthorize("Admin", "Staff")]
-        public async Task<IActionResult> UpdateOrder(Guid id, [FromBody] OrdersUpdateVM request)
+        public async Task<IActionResult> UpdateOrder( [FromBody] OrdersUpdateVM request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var order = await _ordersService.GetByIdAsync(id);
+            var order = await _ordersService.GetByIdAsync(request.Id);
             if (order == null)
                 return NotFound();
             _mapper.Map(request, order);

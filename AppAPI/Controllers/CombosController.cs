@@ -1,11 +1,13 @@
 using AppAPI.Attributes;
+using AppAPI.Services.BaseServices;
 using AppAPI.Services.CombosService;
 using AppAPI.Services.CombosService.Dto;
 using AppAPI.Services.CombosService.ViewModels;
-using AppAPI.Services.BaseServices;
+using AppDB.Models.Entity;
+using AutoMapper;
+using Azure.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using AutoMapper;
 
 namespace AppAPI.Controllers
 {
@@ -46,7 +48,7 @@ namespace AppAPI.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             
-            var combo = _mapper.Map<AppDB.Models.Combos>(request);
+            var combo = _mapper.Map<Combos>(request);
             if (request.Image != null)
             {
                 var imagePath = UploadFileHelper.UploadFile(request.Image, "combos");
@@ -61,13 +63,13 @@ namespace AppAPI.Controllers
             return CreatedAtAction(nameof(GetCombo), new { id = combo.id }, dto);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut]
         [JwtAuthorize("Admin", "Staff")]
-        public async Task<IActionResult> UpdateCombo(Guid id, [FromForm] CombosUpdateVM request)
+        public async Task<IActionResult> UpdateCombo([FromForm] CombosUpdateVM request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var combo = await _combosService.GetByIdAsync(id);
+            var combo = await _combosService.GetByIdAsync(request.Id);
             if (combo == null)
                 return NotFound();
             _mapper.Map(request, combo);

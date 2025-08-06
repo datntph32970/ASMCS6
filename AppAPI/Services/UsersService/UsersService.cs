@@ -3,7 +3,7 @@ using AppAPI.Services.BaseServices;
 using AppAPI.Services.BaseServices.Common;
 using AppAPI.Services.UsersService.Dto;
 using AppAPI.Services.UsersService.ViewModels;
-using AppDB.Models;
+using AppDB.Models.Entity;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using System.Text;

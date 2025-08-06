@@ -4,6 +4,7 @@ using AppAPI.Services.JwtService;
 using AppAPI.Services.RolesService;
 using AppAPI.Services.UsersService;
 using AppDB.Models;
+using AppDB.Models.Entity;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using System.Text;

@@ -5,6 +5,7 @@ using AppAPI.Services.ComboDetailsService.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
+using AppDB.Models.Entity;
 
 namespace AppAPI.Controllers
 {
@@ -44,19 +45,19 @@ namespace AppAPI.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var detail = _mapper.Map<AppDB.Models.ComboDetails>(request);
+            var detail = _mapper.Map<ComboDetails>(request);
             await _comboDetailsService.CreateAsync(detail);
             var dto = _mapper.Map<ComboDetailsDto>(detail);
             return CreatedAtAction(nameof(GetComboDetail), new { id = detail.id }, dto);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut]
         [JwtAuthorize("Admin", "Staff")]
-        public async Task<IActionResult> UpdateComboDetail(Guid id, [FromBody] ComboDetailsUpdateVM request)
+        public async Task<IActionResult> UpdateComboDetail([FromBody] ComboDetailsUpdateVM request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var detail = await _comboDetailsService.GetByIdAsync(id);
+            var detail = await _comboDetailsService.GetByIdAsync(request.Id);
             if (detail == null)
                 return NotFound();
             _mapper.Map(request, detail);

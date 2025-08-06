@@ -3,7 +3,7 @@ using AppAPI.Services.BaseServices;
 using AppAPI.Services.BaseServices.Common;
 using AppAPI.Services.CategoriesService.Dto;
 using AppAPI.Services.CategoriesService.ViewModels;
-using AppDB.Models;
+using AppDB.Models.Entity;
 using Microsoft.EntityFrameworkCore;
 
 namespace AppAPI.Services.CategoriesService

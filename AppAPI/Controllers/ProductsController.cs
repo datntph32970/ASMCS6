@@ -6,6 +6,7 @@ using AppAPI.Services.BaseServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
+using AppDB.Models.Entity;
 
 namespace AppAPI.Controllers
 {
@@ -47,7 +48,7 @@ namespace AppAPI.Controllers
                 return BadRequest(ModelState);
 
 
-            var product = _mapper.Map<AppDB.Models.Products>(request);
+            var product = _mapper.Map<Products>(request);
             if (request.Image != null)
             {
                 var imagePath = UploadFileHelper.UploadFile(request.Image, "products");
@@ -63,14 +64,14 @@ namespace AppAPI.Controllers
             return CreatedAtAction(nameof(GetProduct), new { id = product.id }, dto);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut]
         [JwtAuthorize("Admin", "Staff")]
-        public async Task<IActionResult> UpdateProduct(Guid id, [FromForm] ProductsUpdateVM request)
+        public async Task<IActionResult> UpdateProduct( [FromForm] ProductsUpdateVM request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var product = await _productsService.GetByIdAsync(id);
+            var product = await _productsService.GetByIdAsync(request.Id);
             if (product == null)
                 return NotFound();
 

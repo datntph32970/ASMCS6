@@ -6,5 +6,6 @@ namespace AppAPI.Services.OrderDetailsService.ViewModels
     {
         public Guid? OrderID { get; set; }
         public Guid? ProductID { get; set; }
+        public Guid? ComboID { get; set; }
     }
 } 

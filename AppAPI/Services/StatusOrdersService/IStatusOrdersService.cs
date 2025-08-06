@@ -2,7 +2,7 @@ using AppAPI.Services.BaseServices;
 using AppAPI.Services.BaseServices.Common;
 using AppAPI.Services.StatusOrdersService.Dto;
 using AppAPI.Services.StatusOrdersService.ViewModels;
-using AppDB.Models;
+using AppDB.Models.Entity;
 
 namespace AppAPI.Services.StatusOrdersService
 {

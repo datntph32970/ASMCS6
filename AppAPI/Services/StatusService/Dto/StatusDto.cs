@@ -1,4 +1,4 @@
-using AppDB.Models;
+using AppDB.Models.Entity;
 using System.ComponentModel.DataAnnotations;
 
 namespace AppAPI.Services.StatusService.Dto

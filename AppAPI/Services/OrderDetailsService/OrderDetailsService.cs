@@ -3,7 +3,7 @@ using AppAPI.Services.BaseServices;
 using AppAPI.Services.BaseServices.Common;
 using AppAPI.Services.OrderDetailsService.Dto;
 using AppAPI.Services.OrderDetailsService.ViewModels;
-using AppDB.Models;
+using AppDB.Models.Entity;
 using Microsoft.EntityFrameworkCore;
 
 namespace AppAPI.Services.OrderDetailsService
@@ -22,6 +22,7 @@ namespace AppAPI.Services.OrderDetailsService
                             id = od.id,
                             OrderID = od.OrderID,
                             ProductID = od.ProductID,
+                            ComboID = od.ComboID,
                             Quantity = od.Quantity,
                             UnitPrice = od.UnitPrice,
                             Order = od.Order,
@@ -39,6 +40,8 @@ namespace AppAPI.Services.OrderDetailsService
                     query = query.Where(x => x.OrderID == search.OrderID);
                 if(search.ProductID.HasValue)
                     query = query.Where(x => x.ProductID == search.ProductID);
+                if(search.ComboID.HasValue)
+                    query = query.Where(x => x.ComboID == search.ComboID);
             }
             query = query.OrderByDescending(x => x.createdDate);
             return await PagedList<OrderDetailsDto>.CreateAsync(query, search);
@@ -52,6 +55,7 @@ namespace AppAPI.Services.OrderDetailsService
                                   id = od.id,
                                   OrderID = od.OrderID,
                                   ProductID = od.ProductID,
+                                    ComboID = od.ComboID,
                                   Quantity = od.Quantity,
                                   UnitPrice = od.UnitPrice,
                                   Order = od.Order,

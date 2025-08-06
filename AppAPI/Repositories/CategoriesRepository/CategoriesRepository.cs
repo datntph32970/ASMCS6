@@ -1,7 +1,7 @@
 using AppAPI.Repositories.BaseRepository;
 using AppAPI.Repositories.ComboDetailsRepository;
 using AppDB;
-using AppDB.Models;
+using AppDB.Models.Entity;
 
 namespace AppAPI.Repositories.CategoriesRepository
 {

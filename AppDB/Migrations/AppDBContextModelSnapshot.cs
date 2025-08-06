@@ -150,10 +150,13 @@ namespace AppDB.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("ComboID")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("OrderID")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ProductID")
+                    b.Property<Guid?>("ProductID")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Quantity")
@@ -181,6 +184,8 @@ namespace AppDB.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("id");
+
+                    b.HasIndex("ComboID");
 
                     b.HasIndex("OrderID");
 
@@ -515,6 +520,10 @@ namespace AppDB.Migrations
 
             modelBuilder.Entity("AppDB.Models.OrderDetails", b =>
                 {
+                    b.HasOne("AppDB.Models.Combos", "Combo")
+                        .WithMany("OrderDetails")
+                        .HasForeignKey("ComboID");
+
                     b.HasOne("AppDB.Models.Orders", "Order")
                         .WithMany("OrderDetails")
                         .HasForeignKey("OrderID")
@@ -523,9 +532,9 @@ namespace AppDB.Migrations
 
                     b.HasOne("AppDB.Models.Products", "Product")
                         .WithMany("OrderDetails")
-                        .HasForeignKey("ProductID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ProductID");
+
+                    b.Navigation("Combo");
 
                     b.Navigation("Order");
 
@@ -599,6 +608,8 @@ namespace AppDB.Migrations
             modelBuilder.Entity("AppDB.Models.Combos", b =>
                 {
                     b.Navigation("ComboDetails");
+
+                    b.Navigation("OrderDetails");
                 });
 
             modelBuilder.Entity("AppDB.Models.Orders", b =>

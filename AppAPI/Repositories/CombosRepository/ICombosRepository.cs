@@ -1,5 +1,5 @@
 using AppAPI.Repositories.BaseRepository;
-using AppDB.Models;
+using AppDB.Models.Entity;
 
 namespace AppAPI.Repositories.CombosRepository
 {

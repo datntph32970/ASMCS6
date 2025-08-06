@@ -1,7 +1,7 @@
 using AppAPI.Attributes;
 using AppAPI.Services.UsersService;
 using AppAPI.Services.UsersService.ViewModels;
-using AppDB.Models;
+using AppDB.Models.Entity;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -51,7 +51,7 @@ namespace AppAPI.Controllers
             return CreatedAtAction(nameof(GetUser), new { id = entity.id }, entity);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut]
         public async Task<IActionResult> UpdateUser([FromBody] UsersUpdateVM request)
         {
             if (!ModelState.IsValid)

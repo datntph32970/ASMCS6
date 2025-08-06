@@ -5,6 +5,7 @@ using AppAPI.Services.StatusOrdersService.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
+using AppDB.Models.Entity;
 
 namespace AppAPI.Controllers
 {
@@ -44,19 +45,19 @@ namespace AppAPI.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var statusOrder = _mapper.Map<AppDB.Models.StatusOrders>(request);
+            var statusOrder = _mapper.Map<StatusOrders>(request);
             await _statusOrdersService.CreateAsync(statusOrder);
             var dto = _mapper.Map<StatusOrdersDto>(statusOrder);
             return CreatedAtAction(nameof(GetStatusOrder), new { id = statusOrder.id }, dto);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut]
         [JwtAuthorize("Admin", "Staff")]
-        public async Task<IActionResult> UpdateStatusOrder(Guid id, [FromBody] StatusOrdersUpdateVM request)
+        public async Task<IActionResult> UpdateStatusOrder([FromBody] StatusOrdersUpdateVM request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var statusOrder = await _statusOrdersService.GetByIdAsync(id);
+            var statusOrder = await _statusOrdersService.GetByIdAsync(request.id);
             if (statusOrder == null)
                 return NotFound();
             _mapper.Map(request, statusOrder);

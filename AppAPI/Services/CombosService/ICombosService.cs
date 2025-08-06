@@ -2,7 +2,7 @@ using AppAPI.Services.BaseServices;
 using AppAPI.Services.BaseServices.Common;
 using AppAPI.Services.CombosService.Dto;
 using AppAPI.Services.CombosService.ViewModels;
-using AppDB.Models;
+using AppDB.Models.Entity;
 
 namespace AppAPI.Services.CombosService
 {

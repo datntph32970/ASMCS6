@@ -5,6 +5,7 @@ using AppAPI.Services.StatusService.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
+using AppDB.Models.Entity;
 
 namespace AppAPI.Controllers
 {
@@ -44,19 +45,19 @@ namespace AppAPI.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var status = _mapper.Map<AppDB.Models.Status>(request);
+            var status = _mapper.Map<Status>(request);
             await _statusService.CreateAsync(status);
             var dto = _mapper.Map<StatusDto>(status);
             return CreatedAtAction(nameof(GetStatus), new { id = status.id }, dto);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut]
         [JwtAuthorize("Admin", "Staff")]
-        public async Task<IActionResult> UpdateStatus(Guid id, [FromBody] StatusUpdateVM request)
+        public async Task<IActionResult> UpdateStatus([FromBody] StatusUpdateVM request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var status = await _statusService.GetByIdAsync(id);
+            var status = await _statusService.GetByIdAsync(request.id);
             if (status == null)
                 return NotFound();
             _mapper.Map(request, status);

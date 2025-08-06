@@ -2,7 +2,7 @@ using AppAPI.Services.BaseServices;
 using AppAPI.Services.BaseServices.Common;
 using AppAPI.Services.OrderDetailsService.Dto;
 using AppAPI.Services.OrderDetailsService.ViewModels;
-using AppDB.Models;
+using AppDB.Models.Entity;
 
 namespace AppAPI.Services.OrderDetailsService
 {
