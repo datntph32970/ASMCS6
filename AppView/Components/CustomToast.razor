@@ -1,0 +1,73 @@
+@if (Visible)
+{
+    <div class="custom-toast @ToastTypeClass"
+        style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 250px;">
+        <span>@Message</span>
+        <button class="close" @onclick="Hide">&times;</button>
+    </div>
+}
+
+@code {
+    [Parameter] public string Message { get; set; } = string.Empty;
+    [Parameter] public string Type { get; set; } = "info"; // success, error, info
+    [Parameter] public bool Visible { get; set; }
+    [Parameter] public EventCallback OnHide { get; set; }
+
+    private string ToastTypeClass => Type switch
+    {
+        "success" => "toast-success",
+        "error" => "toast-error",
+        _ => "toast-info"
+    };
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Visible)
+        {
+            await Task.Delay(3000);
+            await Hide();
+        }
+    }
+
+    private async Task Hide()
+    {
+        Visible = false;
+        await OnHide.InvokeAsync();
+        StateHasChanged();
+    }
+}
+
+<style>
+    .custom-toast {
+        background: #fff;
+        border-radius: 6px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        padding: 16px 32px 16px 16px;
+        margin-bottom: 10px;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        border-left: 6px solid #007bff;
+        transition: opacity 0.3s;
+    }
+
+    .toast-success {
+        border-left-color: #28a745;
+    }
+
+    .toast-error {
+        border-left-color: #dc3545;
+    }
+
+    .toast-info {
+        border-left-color: #007bff;
+    }
+
+    .custom-toast .close {
+        background: none;
+        border: none;
+        font-size: 1.2rem;
+        margin-left: 16px;
+        cursor: pointer;
+    }
+</style>

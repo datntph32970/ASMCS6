@@ -1,0 +1,76 @@
+@page "/register"
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+<h3>Đăng ký tài khoản</h3>
+
+<EditForm Model="registerModel" OnValidSubmit="HandleRegister">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="mb-3">
+        <label>Tên đăng nhập</label>
+        <InputText class="form-control" @bind-Value="registerModel.Username" />
+    </div>
+    <div class="mb-3">
+        <label>Mật khẩu</label>
+        <InputText class="form-control" @bind-Value="registerModel.Password" type="password" />
+    </div>
+    <div class="mb-3">
+        <label>Nhập lại mật khẩu</label>
+        <InputText class="form-control" @bind-Value="registerModel.ConfirmPassword" type="password" />
+    </div>
+    <div class="mb-3">
+        <label>Họ tên</label>
+        <InputText class="form-control" @bind-Value="registerModel.FullName" />
+    </div>
+    <div class="mb-3">
+        <label>Email</label>
+        <InputText class="form-control" @bind-Value="registerModel.Email" />
+    </div>
+    <div class="mb-3">
+        <label>Số điện thoại</label>
+        <InputText class="form-control" @bind-Value="registerModel.Phone" />
+    </div>
+    <div class="mb-3">
+        <label>Địa chỉ</label>
+        <InputText class="form-control" @bind-Value="registerModel.Address" />
+    </div>
+    <button class="btn btn-success" type="submit">Đăng ký</button>
+    <span class="text-danger">@errorMessage</span>
+    <span class="text-success">@successMessage</span>
+</EditForm>
+
+@code {
+    [CascadingParameter] public Action<string, string>? ShowToast { get; set; }
+    private RegisterRequest registerModel = new();
+    private string errorMessage = string.Empty;
+    private string successMessage = string.Empty;
+
+    private async Task HandleRegister()
+    {
+        errorMessage = string.Empty;
+        successMessage = string.Empty;
+        try
+        {
+            var response = await Http.PostAsJsonAsync("/api/Auth/register", registerModel);
+            var apiResponse = await response.Content.ReadFromJsonAsync<ApiResponse<AuthResponse>>();
+            if (apiResponse?.Success == true)
+            {
+                ShowToast?.Invoke(apiResponse.Message ?? "Đăng ký thành công! Vui lòng đăng nhập.", "success");
+                successMessage = apiResponse.Message ?? "Đăng ký thành công! Vui lòng đăng nhập.";
+                await Task.Delay(1500);
+                Navigation.NavigateTo("/login");
+            }
+            else
+            {
+                ShowToast?.Invoke(apiResponse?.Message ?? "Đăng ký thất bại.", "error");
+                errorMessage = apiResponse?.Message ?? "Đăng ký thất bại.";
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowToast?.Invoke(ex.Message, "error");
+            errorMessage = ex.Message;
+        }
+    }
+}

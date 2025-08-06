@@ -1,0 +1,36 @@
+﻿@using AppView.Components
+
+<CascadingValue Value="(Action<string, string>)ShowToast">
+    <Router AppAssembly="@typeof(App).Assembly">
+        <Found Context="routeData">
+            <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        </Found>
+        <NotFound>
+            <PageTitle>Not found</PageTitle>
+            <LayoutView Layout="@typeof(MainLayout)">
+                <p role="alert">Sorry, there's nothing at this address.</p>
+            </LayoutView>
+        </NotFound>
+    </Router>
+    <CustomToast Message="@toastMessage" Type="@toastType" Visible="@showToast" OnHide="HideToast" />
+</CascadingValue>
+
+@code {
+    private string toastMessage = string.Empty;
+    private string toastType = "info";
+    private bool showToast = false;
+
+    public void ShowToast(string message, string type = "info")
+    {
+        toastMessage = message;
+        toastType = type;
+        showToast = true;
+        StateHasChanged();
+    }
+    private void HideToast()
+    {
+        showToast = false;
+        StateHasChanged();
+    }
+}

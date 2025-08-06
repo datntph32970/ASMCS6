@@ -1,0 +1,55 @@
+﻿@page "/"
+@using AppDB.Models.DtoAndViewModels.ProductsService.Dto
+@inject HttpClient Http
+
+<PageTitle>Home</PageTitle>
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+<h3>Danh sách sản phẩm</h3>
+
+@if (products == null)
+{
+    <p>Đang tải...</p>
+}
+else if (products.Count == 0)
+{
+    <p>Không có sản phẩm nào.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Tên sản phẩm</th>
+                <th>Mô tả</th>
+                <th>Giá</th>
+                <th>Ảnh</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in products)
+            {
+                <tr>
+                    <td>@p.ProductName</td>
+                    <td>@p.Description</td>
+                    <td>@p.Price</td>
+                    <td>
+                        <img src="@p.ImageURL" alt="@p.ProductName" width="80" />
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    List<ProductsDto> products;
+
+    protected override async Task OnInitializedAsync()
+    {
+        products = await Http.GetFromJsonAsync<List<ProductsDto>>("/api/Products");
+    }
+}
