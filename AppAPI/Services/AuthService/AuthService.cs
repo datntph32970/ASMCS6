@@ -27,7 +27,7 @@ namespace AppAPI.Services.AuthService
             _rolesService = rolesService;
         }
 
-        public async Task<AuthResponse> LoginAsync(LoginRequest request)
+        public async Task<ApiResponse<AuthResponse>> LoginAsync(LoginRequest request)
         {
             try
             {
@@ -37,53 +37,44 @@ namespace AppAPI.Services.AuthService
 
                 if (user == null)
                 {
-                    return new AuthResponse
-                    {
-                        Success = false,
-                        Message = "Invalid username or password"
-                    };
+                    return ApiResponse<AuthResponse>.Error("Invalid username or password");
                 }
 
                 if (!VerifyPassword(request.Password, user.Password))
                 {
-                    return new AuthResponse
-                    {
-                        Success = false,
-                        Message = "Invalid username or password"
-                    };
+                    return ApiResponse<AuthResponse>.Error("Invalid username or password");
                 }
 
                 var token = _jwtService.GenerateToken(user);
 
-                return new AuthResponse
+                return new ApiResponse<AuthResponse>
                 {
                     Success = true,
-                    Message = "Login successful",
-                    Token = token,
-                    User = new UserInfo
+                    Data = new AuthResponse
                     {
-                        Id = user.id,
-                        Username = user.Username,
-                        FullName = user.FullName,
-                        Email = user.Email,
-                        Phone = user.Phone,
-                        Address = user.Address,
-                        RoleId = user.RoleId,
-                        RoleName = user.Role?.RoleName ?? ""
-                    }
+                        Token = token,
+                        User = new UserInfo
+                        {
+                            Id = user.id,
+                            Username = user.Username,
+                            FullName = user.FullName,
+                            Email = user.Email,
+                            Phone = user.Phone,
+                            Address = user.Address,
+                            RoleId = user.RoleId,
+                            RoleName = user.Role?.RoleName??"" // Ensure Role is not null
+                        }
+                    },
+                    Message = "Login successful"
                 };
             }
             catch (Exception ex)
             {
-                return new AuthResponse
-                {
-                    Success = false,
-                    Message = $"Login failed: {ex.Message}"
-                };
+                return  ApiResponse<AuthResponse>.Error($"Login failed: {ex.Message}");
             }
         }
 
-        public async Task<AuthResponse> RegisterAsync(RegisterRequest request)
+        public async Task<ApiResponse<AuthResponse>> RegisterAsync(RegisterRequest request)
         {
             try
             {
@@ -93,11 +84,7 @@ namespace AppAPI.Services.AuthService
 
                 if (existingUser != null)
                 {
-                    return new AuthResponse
-                    {
-                        Success = false,
-                        Message = "Username already exists"
-                    };
+                    return ApiResponse<AuthResponse>.Error("Username already exists");
                 }
 
                 // Check if email already exists
@@ -108,11 +95,7 @@ namespace AppAPI.Services.AuthService
 
                     if (existingEmail != null)
                     {
-                        return new AuthResponse
-                        {
-                            Success = false,
-                            Message = "Email already exists"
-                        };
+                        return ApiResponse<AuthResponse>.Error("Email already exists");
                     }
                 }
 
@@ -120,11 +103,7 @@ namespace AppAPI.Services.AuthService
                 var role = await _rolesService.GetByIdAsync(request.RoleId);
                 if (role == null)
                 {
-                    return new AuthResponse
-                    {
-                        Success = false,
-                        Message = "Invalid role"
-                    };
+                    return ApiResponse<AuthResponse>.Error("Role does not exist");
                 }
 
                 var hashedPassword = HashPassword(request.Password);
@@ -144,10 +123,8 @@ namespace AppAPI.Services.AuthService
 
                 var token = _jwtService.GenerateToken(newUser);
 
-                return new AuthResponse
+                return ApiResponse<AuthResponse>.Ok(new AuthResponse
                 {
-                    Success = true,
-                    Message = "Registration successful",
                     Token = token,
                     User = new UserInfo
                     {
@@ -158,17 +135,13 @@ namespace AppAPI.Services.AuthService
                         Phone = newUser.Phone,
                         Address = newUser.Address,
                         RoleId = newUser.RoleId,
-                        RoleName = role.RoleName
+                        RoleName = role.RoleName // Ensure Role is not null
                     }
-                };
+                }, "Registration successful");
             }
             catch (Exception ex)
             {
-                return new AuthResponse
-                {
-                    Success = false,
-                    Message = $"Registration failed: {ex.Message}"
-                };
+                return ApiResponse<AuthResponse>.Error($"Registration failed: {ex.Message}");
             }
         }
 

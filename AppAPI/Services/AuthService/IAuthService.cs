@@ -5,8 +5,8 @@ namespace AppAPI.Services.AuthService
 {
     public interface IAuthService
     {
-        Task<AuthResponse> LoginAsync(LoginRequest request);
-        Task<AuthResponse> RegisterAsync(RegisterRequest request);
+        Task<ApiResponse<AuthResponse>> LoginAsync(LoginRequest request);
+        Task<ApiResponse<AuthResponse>> RegisterAsync(RegisterRequest request);
         Task<bool> ValidateUserAsync(string username, string password);
     }
 }
