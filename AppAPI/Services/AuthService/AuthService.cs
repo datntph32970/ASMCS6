@@ -100,7 +100,7 @@ namespace AppAPI.Services.AuthService
                 }
 
                 // Verify role exists
-                var role = await _rolesService.GetByIdAsync(request.RoleId);
+                var role = await _rolesService.GetByIdAsync(Guid.Parse("33333333-3333-3333-3333-333333333333"));
                 if (role == null)
                 {
                     return ApiResponse<AuthResponse>.Error("Role does not exist");
@@ -116,7 +116,7 @@ namespace AppAPI.Services.AuthService
                     Email = request.Email,
                     Phone = request.Phone,
                     Address = request.Address,
-                    RoleId = request.RoleId
+                    RoleId = role.id
                 };
 
                 await _usersService.CreateAsync(newUser);

@@ -1,31 +1,10 @@
-using AppView.Services;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// Add Session
-builder.Services.AddSession(options =>
-{
-    options.IdleTimeout = TimeSpan.FromMinutes(30);
-    options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
-});
-
-// Add HttpClient
-builder.Services.AddHttpClient();
-
-// Add HttpContextAccessor
-builder.Services.AddHttpContextAccessor();
-
-// Register API Services
-builder.Services.AddScoped<IBaseApiService, BaseApiService>();
-builder.Services.AddScoped<IProductsService, ProductsService>();
-builder.Services.AddScoped<ICategoriesService, CategoriesService>();
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IJwtService, JwtService>();
-builder.Services.AddScoped<IRolesService, RolesService>();
+// Đăng ký AuthService sử dụng HttpClient và cấu hình BaseUrl từ appsettings
+builder.Services.AddHttpClient<IAuthService, AuthService>();
 
 var app = builder.Build();
 
@@ -41,11 +20,6 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
-app.UseSession();
-
-// Add custom authentication middleware
-app.UseMiddleware<AppView.Middleware.AuthenticationMiddleware>();
 
 app.UseAuthorization();
 

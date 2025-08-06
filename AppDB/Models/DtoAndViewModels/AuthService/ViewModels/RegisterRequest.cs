@@ -27,7 +27,5 @@ namespace AppDB.Models.DtoAndViewModels.AuthService.ViewModels
 
         public string Address { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Role ID is required")]
-        public Guid RoleId { get; set; }
     }
 }
