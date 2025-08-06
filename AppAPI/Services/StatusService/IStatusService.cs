@@ -1,7 +1,7 @@
 using AppAPI.Services.BaseServices;
-using AppAPI.Services.BaseServices.Common;
-using AppAPI.Services.StatusService.Dto;
-using AppAPI.Services.StatusService.ViewModels;
+using AppDB.Models.DtoAndViewModels.BaseServices.Common;
+using AppDB.Models.DtoAndViewModels.StatusService.Dto;
+using AppDB.Models.DtoAndViewModels.StatusService.ViewModels;
 using AppDB.Models.Entity;
 
 namespace AppAPI.Services.StatusService

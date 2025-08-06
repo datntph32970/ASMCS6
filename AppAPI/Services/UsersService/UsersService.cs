@@ -1,8 +1,8 @@
 using AppAPI.Repositories.BaseRepository;
 using AppAPI.Services.BaseServices;
-using AppAPI.Services.BaseServices.Common;
-using AppAPI.Services.UsersService.Dto;
-using AppAPI.Services.UsersService.ViewModels;
+using AppDB.Models.DtoAndViewModels.BaseServices.Common;
+using AppDB.Models.DtoAndViewModels.UsersService.Dto;
+using AppDB.Models.DtoAndViewModels.UsersService.ViewModels;
 using AppDB.Models.Entity;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;

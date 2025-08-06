@@ -1,7 +1,7 @@
 using AppAPI.Services.BaseServices;
-using AppAPI.Services.BaseServices.Common;
-using AppAPI.Services.ProductsService.Dto;
-using AppAPI.Services.ProductsService.ViewModels;
+using AppDB.Models.DtoAndViewModels.BaseServices.Common;
+using AppDB.Models.DtoAndViewModels.ProductsService.Dto;
+using AppDB.Models.DtoAndViewModels.ProductsService.ViewModels;
 using AppDB.Models.Entity;
 
 namespace AppAPI.Services.ProductsService

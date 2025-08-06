@@ -1,12 +1,12 @@
 using AppAPI.Attributes;
 using AppAPI.Services.ProductsService;
-using AppAPI.Services.ProductsService.Dto;
-using AppAPI.Services.ProductsService.ViewModels;
 using AppAPI.Services.BaseServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
 using AppDB.Models.Entity;
+using AppDB.Models.DtoAndViewModels.ProductsService.ViewModels;
+using AppDB.Models.DtoAndViewModels.ProductsService.Dto;
 
 namespace AppAPI.Controllers
 {

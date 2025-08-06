@@ -1,8 +1,8 @@
 using AppAPI.Attributes;
 using AppAPI.Services.BaseServices;
 using AppAPI.Services.CombosService;
-using AppAPI.Services.CombosService.Dto;
-using AppAPI.Services.CombosService.ViewModels;
+using AppDB.Models.DtoAndViewModels.CombosService.Dto;
+using AppDB.Models.DtoAndViewModels.CombosService.ViewModels;
 using AppDB.Models.Entity;
 using AutoMapper;
 using Azure.Core;

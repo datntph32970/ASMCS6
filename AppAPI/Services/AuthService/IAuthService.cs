@@ -1,5 +1,5 @@
-using AppAPI.Services.AuthService.ViewModels;
 using AppDB.Models;
+using AppDB.Models.DtoAndViewModels.AuthService.ViewModels;
 
 namespace AppAPI.Services.AuthService
 {

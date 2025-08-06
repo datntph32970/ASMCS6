@@ -1,8 +1,8 @@
 using AppAPI.Repositories.BaseRepository;
 using AppAPI.Services.BaseServices;
-using AppAPI.Services.BaseServices.Common;
-using AppAPI.Services.OrdersService.Dto;
-using AppAPI.Services.OrdersService.ViewModels;
+using AppDB.Models.DtoAndViewModels.BaseServices.Common;
+using AppDB.Models.DtoAndViewModels.OrdersService.Dto;
+using AppDB.Models.DtoAndViewModels.OrdersService.ViewModels;
 using AppDB.Models.Entity;
 using Microsoft.EntityFrameworkCore;
 

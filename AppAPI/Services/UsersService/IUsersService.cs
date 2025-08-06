@@ -1,7 +1,7 @@
 using AppAPI.Services.BaseServices;
-using AppAPI.Services.BaseServices.Common;
-using AppAPI.Services.UsersService.Dto;
-using AppAPI.Services.UsersService.ViewModels;
+using AppDB.Models.DtoAndViewModels.BaseServices.Common;
+using AppDB.Models.DtoAndViewModels.UsersService.Dto;
+using AppDB.Models.DtoAndViewModels.UsersService.ViewModels;
 using AppDB.Models.Entity;
 
 namespace AppAPI.Services.UsersService

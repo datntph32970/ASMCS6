@@ -1,11 +1,11 @@
 using AppAPI.Attributes;
 using AppAPI.Services.ComboDetailsService;
-using AppAPI.Services.ComboDetailsService.Dto;
-using AppAPI.Services.ComboDetailsService.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
 using AppDB.Models.Entity;
+using AppDB.Models.DtoAndViewModels.ComboDetailsService.ViewModels;
+using AppDB.Models.DtoAndViewModels.ComboDetailsService.Dto;
 
 namespace AppAPI.Controllers
 {

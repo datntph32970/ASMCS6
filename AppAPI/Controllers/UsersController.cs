@@ -1,6 +1,6 @@
 using AppAPI.Attributes;
 using AppAPI.Services.UsersService;
-using AppAPI.Services.UsersService.ViewModels;
+using AppDB.Models.DtoAndViewModels.UsersService.ViewModels;
 using AppDB.Models.Entity;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;

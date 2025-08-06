@@ -1,6 +1,6 @@
 using AppAPI.Attributes;
 using AppAPI.Services.RolesService;
-using AppAPI.Services.RolesService.ViewModels;
+using AppDB.Models.DtoAndViewModels.RolesService.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

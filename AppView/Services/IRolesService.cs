@@ -1,3 +1,4 @@
+using AppDB.Models.DtoAndViewModels.AuthService.ViewModels;
 using AppDB.Models.DtoAndViewModels.RolesService.Dto;
 using AppView.Models;
 

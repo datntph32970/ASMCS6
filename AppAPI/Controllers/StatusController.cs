@@ -1,11 +1,11 @@
 using AppAPI.Attributes;
 using AppAPI.Services.StatusService;
-using AppAPI.Services.StatusService.Dto;
-using AppAPI.Services.StatusService.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
 using AppDB.Models.Entity;
+using AppDB.Models.DtoAndViewModels.StatusService.ViewModels;
+using AppDB.Models.DtoAndViewModels.StatusService.Dto;
 
 namespace AppAPI.Controllers
 {

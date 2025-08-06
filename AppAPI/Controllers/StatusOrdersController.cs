@@ -1,11 +1,11 @@
 using AppAPI.Attributes;
 using AppAPI.Services.StatusOrdersService;
-using AppAPI.Services.StatusOrdersService.Dto;
-using AppAPI.Services.StatusOrdersService.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
 using AppDB.Models.Entity;
+using AppDB.Models.DtoAndViewModels.StatusOrdersService.ViewModels;
+using AppDB.Models.DtoAndViewModels.StatusOrdersService.Dto;
 
 namespace AppAPI.Controllers
 {

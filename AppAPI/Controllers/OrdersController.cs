@@ -1,11 +1,11 @@
 using AppAPI.Attributes;
 using AppAPI.Services.OrdersService;
-using AppAPI.Services.OrdersService.Dto;
-using AppAPI.Services.OrdersService.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
 using AppDB.Models.Entity;
+using AppDB.Models.DtoAndViewModels.OrdersService.ViewModels;
+using AppDB.Models.DtoAndViewModels.OrdersService.Dto;
 
 namespace AppAPI.Controllers
 {

@@ -1,8 +1,8 @@
 using AppAPI.Repositories.BaseRepository;
 using AppAPI.Services.BaseServices;
-using AppAPI.Services.BaseServices.Common;
-using AppAPI.Services.CombosService.Dto;
-using AppAPI.Services.CombosService.ViewModels;
+using AppDB.Models.DtoAndViewModels.BaseServices.Common;
+using AppDB.Models.DtoAndViewModels.CombosService.Dto;
+using AppDB.Models.DtoAndViewModels.CombosService.ViewModels;
 using AppDB.Models.Entity;
 using Microsoft.EntityFrameworkCore;
 

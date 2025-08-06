@@ -1,11 +1,11 @@
 using AppAPI.Attributes;
 using AppAPI.Services.CategoriesService;
-using AppAPI.Services.CategoriesService.Dto;
-using AppAPI.Services.CategoriesService.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
 using AppDB.Models.Entity;
+using AppDB.Models.DtoAndViewModels.CategoriesService.ViewModels;
+using AppDB.Models.DtoAndViewModels.CategoriesService.Dto;
 
 namespace AppAPI.Controllers
 {

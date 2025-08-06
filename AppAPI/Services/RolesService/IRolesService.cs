@@ -1,7 +1,7 @@
 ﻿using AppAPI.Services.BaseServices;
-using AppAPI.Services.BaseServices.Common;
-using AppAPI.Services.RolesService.Dto;
-using AppAPI.Services.RolesService.ViewModels;
+using AppDB.Models.DtoAndViewModels.BaseServices.Common;
+using AppDB.Models.DtoAndViewModels.RolesService.Dto;
+using AppDB.Models.DtoAndViewModels.RolesService.ViewModels;
 using AppDB.Models.Entity;
 
 namespace AppAPI.Services.RolesService

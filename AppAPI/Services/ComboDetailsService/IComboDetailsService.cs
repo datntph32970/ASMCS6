@@ -1,7 +1,7 @@
 using AppAPI.Services.BaseServices;
-using AppAPI.Services.BaseServices.Common;
-using AppAPI.Services.ComboDetailsService.Dto;
-using AppAPI.Services.ComboDetailsService.ViewModels;
+using AppDB.Models.DtoAndViewModels.BaseServices.Common;
+using AppDB.Models.DtoAndViewModels.ComboDetailsService.Dto;
+using AppDB.Models.DtoAndViewModels.ComboDetailsService.ViewModels;
 using AppDB.Models.Entity;
 
 namespace AppAPI.Services.ComboDetailsService

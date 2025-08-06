@@ -1,3 +1,4 @@
+using AppDB.Models.DtoAndViewModels.AuthService.ViewModels;
 using AppDB.Models.DtoAndViewModels.CategoriesService.Dto;
 using AppDB.Models.DtoAndViewModels.CategoriesService.ViewModels;
 using AppView.Models;
