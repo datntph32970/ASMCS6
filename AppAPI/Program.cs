@@ -10,11 +10,13 @@ using AppAPI.Repositories.StatusOrdersRepository;
 using AppAPI.Repositories.StatusRepository;
 using AppAPI.Repositories.UsersRepository;
 using AppAPI.Services.AuthService;
+using AppAPI.Services.BaseServices;
 using AppAPI.Services.CategoriesService;
 using AppAPI.Services.ComboDetailsService;
 using AppAPI.Services.CombosService;
 using AppAPI.Services.JwtService;
 using AppAPI.Services.JwtService.Dto;
+using AppAPI.Services.MapperService;
 using AppAPI.Services.OrderDetailsService;
 using AppAPI.Services.OrdersService;
 using AppAPI.Services.ProductsService;
@@ -23,14 +25,13 @@ using AppAPI.Services.StatusOrdersService;
 using AppAPI.Services.StatusService;
 using AppAPI.Services.UsersService;
 using AppDB;
+using AppDB.Models.Entity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
-using AutoMapper;
-using AppDB.Models.Entity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,46 +41,6 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
-// Configure AutoMapper
-builder.Services.AddAutoMapper(cfg =>
-{
-    // Auto-register all mappings using reflection
-    var viewModelTypes = typeof(Program).Assembly.GetTypes()
-        .Where(t => t.Name.EndsWith("CreateVM") || t.Name.EndsWith("UpdateVM"))
-        .ToList();
-
-    var dtoTypes = typeof(Program).Assembly.GetTypes()
-        .Where(t => t.Name.EndsWith("Dto"))
-        .ToList();
-
-    var modelTypes = typeof(BaseEntity).Assembly.GetTypes()
-        .Where(t => t.IsSubclassOf(typeof(BaseEntity)))
-        .ToList();
-
-    // Create mappings for ViewModels to Models
-    foreach (var viewModelType in viewModelTypes)
-    {
-        var modelType = modelTypes.FirstOrDefault(m =>
-            viewModelType.Name.Replace("CreateVM", "").Replace("UpdateVM", "") == m.Name);
-
-        if (modelType != null)
-        {
-            cfg.CreateMap(viewModelType, modelType);
-        }
-    }
-
-    // Create mappings for Models to DTOs
-    foreach (var dtoType in dtoTypes)
-    {
-        var modelType = modelTypes.FirstOrDefault(m =>
-            dtoType.Name.Replace("Dto", "") == m.Name);
-
-        if (modelType != null)
-        {
-            cfg.CreateMap(modelType, dtoType);
-        }
-    }
-});
 
 // Configure JWT Settings
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
@@ -149,53 +110,26 @@ builder.Services.AddHttpContextAccessor();
 // Connect to the database
 builder.Services.AddDbContext<AppDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-// Auto-register all Repositories and Services using reflection
-var assembly = typeof(Program).Assembly;
-
-// Register Base Repositories for all entity types
-var entityTypes = typeof(BaseEntity).Assembly.GetTypes()
-    .Where(t => t.IsSubclassOf(typeof(BaseEntity)))
-    .ToList();
-
-foreach (var entityType in entityTypes)
+#region DI
+builder.Services.AddScoped<IMapper, Mapper>();
+builder.Services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
+var repositoryTypes = typeof(IBaseRepository<>).Assembly.GetTypes()
+                 .Where(x => !string.IsNullOrEmpty(x.Namespace) && x.Namespace.StartsWith("AppAPI") && x.Name.EndsWith("Repository"));
+foreach (var intf in repositoryTypes.Where(t => t.IsInterface))
 {
-    var baseRepoType = typeof(BaseRepository<>).MakeGenericType(entityType);
-    var baseRepoInterfaceType = typeof(IBaseRepository<>).MakeGenericType(entityType);
-    builder.Services.AddScoped(baseRepoInterfaceType, baseRepoType);
+    var impl = repositoryTypes.FirstOrDefault(c => c.IsClass && intf.Name.Substring(1) == c.Name);
+    if (impl != null) builder.Services.AddScoped(intf, impl);
 }
 
-// Register Specific Repositories
-var repositoryTypes = assembly.GetTypes()
-    .Where(t => t.IsClass && !t.IsAbstract && t.Name.EndsWith("Repository") && t != typeof(BaseRepository<>))
-    .ToList();
-
-foreach (var repoType in repositoryTypes)
+builder.Services.AddScoped(typeof(IBaseService<>), typeof(BaseService<>));
+var serviceTypes = typeof(IBaseService<>).Assembly.GetTypes()
+     .Where(x => !string.IsNullOrEmpty(x.Namespace) && x.Namespace.StartsWith("AppAPI") && x.Name.EndsWith("Service"));
+foreach (var intf in serviceTypes.Where(t => t.IsInterface))
 {
-    var interfaceType = repoType.GetInterfaces()
-        .FirstOrDefault(i => i.Name == "I" + repoType.Name);
-
-    if (interfaceType != null)
-    {
-        builder.Services.AddScoped(interfaceType, repoType);
-    }
+    var impl = serviceTypes.FirstOrDefault(c => c.IsClass && intf.Name.Substring(1) == c.Name);
+    if (impl != null) builder.Services.AddScoped(intf, impl);
 }
-
-// Register Services
-var serviceTypes = assembly.GetTypes()
-    .Where(t => t.IsClass && !t.IsAbstract && t.Name.EndsWith("Service") && !t.Name.StartsWith("Base"))
-    .ToList();
-
-foreach (var serviceType in serviceTypes)
-{
-    var interfaceType = serviceType.GetInterfaces()
-        .FirstOrDefault(i => i.Name == "I" + serviceType.Name);
-
-    if (interfaceType != null)
-    {
-        builder.Services.AddScoped(interfaceType, serviceType);
-    }
-}
+#endregion
 
 var app = builder.Build();
 
@@ -205,14 +139,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseStaticFiles();
 app.UseHttpsRedirection();
 
 // Add CORS
-app.UseCors(x => x
-    .AllowAnyOrigin()
-    .AllowAnyMethod()
-    .AllowAnyHeader());
+
 app.UseCors("AllowAllOrigins");
 
 app.UseAuthentication();

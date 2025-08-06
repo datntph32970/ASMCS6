@@ -2,10 +2,10 @@ using AppAPI.Attributes;
 using AppAPI.Services.StatusOrdersService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using AutoMapper;
 using AppDB.Models.Entity;
 using AppDB.Models.DtoAndViewModels.StatusOrdersService.ViewModels;
 using AppDB.Models.DtoAndViewModels.StatusOrdersService.Dto;
+using AppAPI.Services.MapperService;
 
 namespace AppAPI.Controllers
 {
@@ -45,10 +45,9 @@ namespace AppAPI.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var statusOrder = _mapper.Map<StatusOrders>(request);
+            var statusOrder = _mapper.Map<StatusOrdersCreateVM,StatusOrders>(request);
             await _statusOrdersService.CreateAsync(statusOrder);
-            var dto = _mapper.Map<StatusOrdersDto>(statusOrder);
-            return CreatedAtAction(nameof(GetStatusOrder), new { id = statusOrder.id }, dto);
+            return CreatedAtAction(nameof(GetStatusOrder), new { id = statusOrder.id }, statusOrder);
         }
 
         [HttpPut]
@@ -62,8 +61,7 @@ namespace AppAPI.Controllers
                 return NotFound();
             _mapper.Map(request, statusOrder);
             await _statusOrdersService.UpdateAsync(statusOrder);
-            var dto = _mapper.Map<StatusOrdersDto>(statusOrder);
-            return Ok(dto);
+            return Ok(statusOrder);
         }
 
         [HttpDelete("{id}")]

@@ -2,10 +2,10 @@ using AppAPI.Attributes;
 using AppAPI.Services.StatusService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using AutoMapper;
 using AppDB.Models.Entity;
 using AppDB.Models.DtoAndViewModels.StatusService.ViewModels;
 using AppDB.Models.DtoAndViewModels.StatusService.Dto;
+using AppAPI.Services.MapperService;
 
 namespace AppAPI.Controllers
 {
@@ -45,10 +45,9 @@ namespace AppAPI.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var status = _mapper.Map<Status>(request);
+            var status = _mapper.Map<StatusCreateVM,Status>(request);
             await _statusService.CreateAsync(status);
-            var dto = _mapper.Map<StatusDto>(status);
-            return CreatedAtAction(nameof(GetStatus), new { id = status.id }, dto);
+            return CreatedAtAction(nameof(GetStatus), new { id = status.id }, status);
         }
 
         [HttpPut]
@@ -62,8 +61,7 @@ namespace AppAPI.Controllers
                 return NotFound();
             _mapper.Map(request, status);
             await _statusService.UpdateAsync(status);
-            var dto = _mapper.Map<StatusDto>(status);
-            return Ok(dto);
+            return Ok(status);
         }
 
         [HttpDelete("{id}")]

@@ -3,10 +3,10 @@ using AppAPI.Services.ProductsService;
 using AppAPI.Services.BaseServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using AutoMapper;
 using AppDB.Models.Entity;
 using AppDB.Models.DtoAndViewModels.ProductsService.ViewModels;
 using AppDB.Models.DtoAndViewModels.ProductsService.Dto;
+using AppAPI.Services.MapperService;
 
 namespace AppAPI.Controllers
 {
@@ -48,7 +48,7 @@ namespace AppAPI.Controllers
                 return BadRequest(ModelState);
 
 
-            var product = _mapper.Map<Products>(request);
+            var product = _mapper.Map<ProductsCreateVM,Products>(request);
             if (request.Image != null)
             {
                 var imagePath = UploadFileHelper.UploadFile(request.Image, "products");
@@ -60,8 +60,7 @@ namespace AppAPI.Controllers
             }
 
             await _productsService.CreateAsync(product);
-            var dto = _mapper.Map<ProductsDto>(product);
-            return CreatedAtAction(nameof(GetProduct), new { id = product.id }, dto);
+            return CreatedAtAction(nameof(GetProduct), new { id = product.id }, product);
         }
 
         [HttpPut]
@@ -86,8 +85,7 @@ namespace AppAPI.Controllers
                 product.ImageURL = imagePath;
             }
             await _productsService.UpdateAsync(product);
-            var dto = _mapper.Map<ProductsDto>(product);
-            return Ok(dto);
+            return Ok(product);
         }
 
         [HttpDelete("{id}")]

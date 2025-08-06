@@ -2,10 +2,10 @@ using AppAPI.Attributes;
 using AppAPI.Services.ComboDetailsService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using AutoMapper;
 using AppDB.Models.Entity;
 using AppDB.Models.DtoAndViewModels.ComboDetailsService.ViewModels;
 using AppDB.Models.DtoAndViewModels.ComboDetailsService.Dto;
+using AppAPI.Services.MapperService;
 
 namespace AppAPI.Controllers
 {
@@ -45,10 +45,9 @@ namespace AppAPI.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var detail = _mapper.Map<ComboDetails>(request);
+            var detail = _mapper.Map<ComboDetailsCreateVM,ComboDetails>(request);
             await _comboDetailsService.CreateAsync(detail);
-            var dto = _mapper.Map<ComboDetailsDto>(detail);
-            return CreatedAtAction(nameof(GetComboDetail), new { id = detail.id }, dto);
+            return CreatedAtAction(nameof(GetComboDetail), new { id = detail.id }, detail);
         }
 
         [HttpPut]
@@ -62,8 +61,7 @@ namespace AppAPI.Controllers
                 return NotFound();
             _mapper.Map(request, detail);
             await _comboDetailsService.UpdateAsync(detail);
-            var dto = _mapper.Map<ComboDetailsDto>(detail);
-            return Ok(dto);
+            return Ok(detail);
         }
 
         [HttpDelete("{id}")]

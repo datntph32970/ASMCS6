@@ -2,10 +2,10 @@ using AppAPI.Attributes;
 using AppAPI.Services.CategoriesService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using AutoMapper;
 using AppDB.Models.Entity;
 using AppDB.Models.DtoAndViewModels.CategoriesService.ViewModels;
 using AppDB.Models.DtoAndViewModels.CategoriesService.Dto;
+using AppAPI.Services.MapperService;
 
 namespace AppAPI.Controllers
 {
@@ -45,10 +45,9 @@ namespace AppAPI.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var category = _mapper.Map<Categories>(request);
+            var category = _mapper.Map<CategoriesCreateVM,Categories>(request);
             await _categoriesService.CreateAsync(category);
-            var dto = _mapper.Map<CategoriesDto>(category);
-            return CreatedAtAction(nameof(GetCategory), new { id = category.id }, dto);
+            return CreatedAtAction(nameof(GetCategory), new { id = category.id }, category);
         }
 
         [HttpPut]
@@ -62,8 +61,7 @@ namespace AppAPI.Controllers
                 return NotFound();
             _mapper.Map(request, category);
             await _categoriesService.UpdateAsync(category);
-            var dto = _mapper.Map<CategoriesDto>(category);
-            return Ok(dto);
+            return Ok(category);
         }
 
         [HttpDelete("{id}")]

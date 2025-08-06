@@ -2,10 +2,10 @@ using AppAPI.Attributes;
 using AppAPI.Services.OrdersService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using AutoMapper;
 using AppDB.Models.Entity;
 using AppDB.Models.DtoAndViewModels.OrdersService.ViewModels;
 using AppDB.Models.DtoAndViewModels.OrdersService.Dto;
+using AppAPI.Services.MapperService;
 
 namespace AppAPI.Controllers
 {
@@ -45,10 +45,9 @@ namespace AppAPI.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var order = _mapper.Map<Orders>(request);
+            var order = _mapper.Map<OrdersCreateVM,Orders>(request);
             await _ordersService.CreateAsync(order);
-            var dto = _mapper.Map<OrdersDto>(order);
-            return CreatedAtAction(nameof(GetOrder), new { id = order.id }, dto);
+            return CreatedAtAction(nameof(GetOrder), new { id = order.id }, order);
         }
 
         [HttpPut]
@@ -62,8 +61,7 @@ namespace AppAPI.Controllers
                 return NotFound();
             _mapper.Map(request, order);
             await _ordersService.UpdateAsync(order);
-            var dto = _mapper.Map<OrdersDto>(order);
-            return Ok(dto);
+            return Ok(order);
         }
 
         [HttpDelete("{id}")]

@@ -1,10 +1,10 @@
 using AppAPI.Attributes;
 using AppAPI.Services.BaseServices;
 using AppAPI.Services.CombosService;
+using AppAPI.Services.MapperService;
 using AppDB.Models.DtoAndViewModels.CombosService.Dto;
 using AppDB.Models.DtoAndViewModels.CombosService.ViewModels;
 using AppDB.Models.Entity;
-using AutoMapper;
 using Azure.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -48,7 +48,7 @@ namespace AppAPI.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             
-            var combo = _mapper.Map<Combos>(request);
+            var combo = _mapper.Map<CombosCreateVM,Combos>(request);
             if (request.Image != null)
             {
                 var imagePath = UploadFileHelper.UploadFile(request.Image, "combos");
@@ -59,8 +59,7 @@ namespace AppAPI.Controllers
                 combo.ImageURL = imagePath;
             }
             await _combosService.CreateAsync(combo);
-            var dto = _mapper.Map<CombosDto>(combo);
-            return CreatedAtAction(nameof(GetCombo), new { id = combo.id }, dto);
+            return CreatedAtAction(nameof(GetCombo), new { id = combo.id }, combo);
         }
 
         [HttpPut]
@@ -83,8 +82,7 @@ namespace AppAPI.Controllers
                 combo.ImageURL = imagePath;
             }
             await _combosService.UpdateAsync(combo);
-            var dto = _mapper.Map<CombosDto>(combo);
-            return Ok(dto);
+            return Ok(combo);
         }
 
         [HttpDelete("{id}")]

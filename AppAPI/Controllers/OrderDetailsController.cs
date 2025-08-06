@@ -2,10 +2,10 @@ using AppAPI.Attributes;
 using AppAPI.Services.OrderDetailsService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using AutoMapper;
 using AppDB.Models.Entity;
 using AppDB.Models.DtoAndViewModels.OrderDetailsService.ViewModels;
 using AppDB.Models.DtoAndViewModels.OrderDetailsService.Dto;
+using AppAPI.Services.MapperService;
 
 namespace AppAPI.Controllers
 {
@@ -45,10 +45,9 @@ namespace AppAPI.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var detail = _mapper.Map<OrderDetails>(request);
+            var detail = _mapper.Map<OrderDetailsCreateVM,OrderDetails>(request);
             await _orderDetailsService.CreateAsync(detail);
-            var dto = _mapper.Map<OrderDetailsDto>(detail);
-            return CreatedAtAction(nameof(GetOrderDetail), new { id = detail.id }, dto);
+            return CreatedAtAction(nameof(GetOrderDetail), new { id = detail.id }, detail);
         }
 
         [HttpPut]
@@ -62,8 +61,7 @@ namespace AppAPI.Controllers
                 return NotFound();
             _mapper.Map(request, detail);
             await _orderDetailsService.UpdateAsync(detail);
-            var dto = _mapper.Map<OrderDetailsDto>(detail);
-            return Ok(dto);
+            return Ok(detail);
         }
 
         [HttpDelete("{id}")]
