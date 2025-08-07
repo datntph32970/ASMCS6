@@ -1,65 +1,110 @@
 @page "/login"
-@inject HttpClient Http
+@using AppDB.Models.DtoAndViewModels.AuthService.ViewModels
+@using AppView.Services
+@using Microsoft.AspNetCore.Components.Authorization
+@inject IApiService ApiService
 @inject NavigationManager Navigation
-@inject AppView.Services.AuthState AuthState
+@inject AuthenticationStateProvider AuthStateProvider
+@inject IToastService ToastService
 
-<h3>Đăng nhập</h3>
+<PageTitle>Đăng nhập</PageTitle>
 
-<EditForm Model="loginModel" OnValidSubmit="HandleLogin">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-    <div class="mb-3">
-        <label>Tên đăng nhập</label>
-        <InputText class="form-control" @bind-Value="loginModel.Username" />
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4 class="mb-0">Đăng nhập</h4>
+                </div>
+                <div class="card-body">
+                    <EditForm Model="@loginModel" OnValidSubmit="HandleLogin">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Tên đăng nhập</label>
+                            <InputText id="username" class="form-control" @bind-Value="loginModel.Username" />
+                            <ValidationMessage For="@(() => loginModel.Username)" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Mật khẩu</label>
+                            <InputText type="password" id="password" class="form-control"
+                                @bind-Value="loginModel.Password" />
+                            <ValidationMessage For="@(() => loginModel.Password)" />
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary" disabled="@isLoading">
+                                @if (isLoading)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2" role="status"
+                                        aria-hidden="true"></span>
+                                    <span>Đang đăng nhập...</span>
+                                }
+                                else
+                                {
+                                    <span>Đăng nhập</span>
+                                }
+                            </button>
+                        </div>
+                    </EditForm>
+
+                    <div class="text-center mt-3">
+                        <p class="mb-0">Chưa có tài khoản? <a href="/register" class="text-decoration-none">Đăng ký
+                                ngay</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="mb-3">
-        <label>Mật khẩu</label>
-        <InputText class="form-control" @bind-Value="loginModel.Password" type="password" />
-    </div>
-    <button class="btn btn-primary" type="submit">Đăng nhập</button>
-    <span class="text-danger">@errorMessage</span>
-</EditForm>
+</div>
 
 @code {
-    [CascadingParameter] public Action<string, string>? ShowToast { get; set; }
     private LoginRequest loginModel = new();
-    private string errorMessage = string.Empty;
+    private bool isLoading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Clear any existing user data when accessing login page
+        await ApiService.ClearTokenAsync();
+        await ApiService.ClearUserInfoAsync();
+    }
 
     private async Task HandleLogin()
     {
-        errorMessage = string.Empty;
+        isLoading = true;
+
         try
         {
-            var response = await Http.PostAsJsonAsync("/api/Auth/login", loginModel);
-            if (response.IsSuccessStatusCode)
+            var result = await ApiService.LoginAsync(loginModel);
+
+            if (result.Success)
             {
-                var apiResponse = await response.Content.ReadFromJsonAsync<ApiResponse<AuthResponse>>();
-                if (apiResponse?.Success == true && !string.IsNullOrEmpty(apiResponse.Data?.Token))
+                ToastService.ShowSuccess("Thành công", "Đăng nhập thành công! Đang chuyển hướng...");
+
+                // Notify authentication state change
+                if (AuthStateProvider is CustomAuthenticationStateProvider customProvider)
                 {
-                    await JS.InvokeVoidAsync("localStorage.setItem", "token", apiResponse.Data.Token);
-                    AuthState.NotifyAuthStateChanged();
-                    ShowToast?.Invoke("Đăng nhập thành công!", "success");
-                    Navigation.NavigateTo("/");
+                    customProvider.NotifyAuthenticationStateChanged();
                 }
-                else
-                {
-                    ShowToast?.Invoke(apiResponse?.Message ?? "Đăng nhập thất bại.", "error");
-                    errorMessage = apiResponse?.Message ?? "Đăng nhập thất bại.";
-                }
+
+                // Delay to show toast before navigation
+                await Task.Delay(1500);
+                Navigation.NavigateTo("/");
             }
             else
             {
-                ShowToast?.Invoke("Sai tài khoản hoặc mật khẩu.", "error");
-                errorMessage = "Sai tài khoản hoặc mật khẩu.";
+                ToastService.ShowError("Lỗi đăng nhập", result.Message ?? "Đăng nhập thất bại");
             }
         }
         catch (Exception ex)
         {
-            ShowToast?.Invoke(ex.Message, "error");
-            errorMessage = ex.Message;
+            ToastService.ShowError("Lỗi", $"Lỗi kết nối: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
-
-    [Inject]
-    private IJSRuntime? JS { get; set; }
 }

@@ -84,8 +84,10 @@ namespace AppDB
             );
 
             // Seed Admin User
-            var adminUserId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
-            var hashedPassword = HashPassword("admin123456");
+            var adminUserId = Guid.Parse("642da3c9-5c2a-4d5d-b03b-f2118baa61fe");
+            var staffUserId = Guid.Parse("b3c8cdf2-9b76-4a19-b008-10f70fb3467f");
+            var customerUserId = Guid.Parse("5966bf4f-efa8-412b-8a26-08150d526bf2");
+            var hashedPassword = HashPassword("12345678");
 
             modelBuilder.Entity<Users>().HasData(
                 new Users
@@ -98,6 +100,20 @@ namespace AppDB
                     Phone = "0123456789",
                     Address = "Admin Address",
                     RoleId = adminRoleId,
+                    createdDate = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                    createdById = adminUserId,
+                    createdByName = "System"
+                },
+                new Users
+                {
+                    id = staffUserId,
+                    Username = "staff",
+                    Password = hashedPassword,
+                    FullName = "Staff",
+                    Email = "staff@example.com",
+                    Phone = "0123256789",
+                    Address = "Staff Address",
+                    RoleId = staffRoleId,
                     createdDate = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
                     createdById = adminUserId,
                     createdByName = "System"

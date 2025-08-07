@@ -1,76 +1,152 @@
 @page "/register"
-@inject HttpClient Http
+@using AppDB.Models.DtoAndViewModels.AuthService.ViewModels
+@using AppView.Services
+@using Microsoft.AspNetCore.Components.Authorization
+@inject IApiService ApiService
 @inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthStateProvider
+@inject IToastService ToastService
 
-<h3>Đăng ký tài khoản</h3>
+<PageTitle>Đăng ký</PageTitle>
 
-<EditForm Model="registerModel" OnValidSubmit="HandleRegister">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-    <div class="mb-3">
-        <label>Tên đăng nhập</label>
-        <InputText class="form-control" @bind-Value="registerModel.Username" />
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white text-center">
+                    <h4 class="mb-0">Đăng ký tài khoản</h4>
+                </div>
+                <div class="card-body">
+                    <EditForm Model="@registerModel" OnValidSubmit="HandleRegister">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="username" class="form-label">Tên đăng nhập *</label>
+                                    <InputText id="username" class="form-control"
+                                        @bind-Value="registerModel.Username" />
+                                    <ValidationMessage For="@(() => registerModel.Username)" />
+                                    <small class="form-text text-muted">Từ 10-50 ký tự</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="fullName" class="form-label">Họ và tên *</label>
+                                    <InputText id="fullName" class="form-control"
+                                        @bind-Value="registerModel.FullName" />
+                                    <ValidationMessage For="@(() => registerModel.FullName)" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">Mật khẩu *</label>
+                                    <InputText type="password" id="password" class="form-control"
+                                        @bind-Value="registerModel.Password" />
+                                    <ValidationMessage For="@(() => registerModel.Password)" />
+                                    <small class="form-text text-muted">Từ 6-50 ký tự</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="confirmPassword" class="form-label">Xác nhận mật khẩu *</label>
+                                    <InputText type="password" id="confirmPassword" class="form-control"
+                                        @bind-Value="registerModel.ConfirmPassword" />
+                                    <ValidationMessage For="@(() => registerModel.ConfirmPassword)" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email</label>
+                                    <InputText type="email" id="email" class="form-control"
+                                        @bind-Value="registerModel.Email" />
+                                    <ValidationMessage For="@(() => registerModel.Email)" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="phone" class="form-label">Số điện thoại</label>
+                                    <InputText id="phone" class="form-control" @bind-Value="registerModel.Phone" />
+                                    <ValidationMessage For="@(() => registerModel.Phone)" />
+                                    <small class="form-text text-muted">10 chữ số</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Địa chỉ</label>
+                            <InputTextArea id="address" class="form-control" rows="3"
+                                @bind-Value="registerModel.Address" />
+                            <ValidationMessage For="@(() => registerModel.Address)" />
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success" disabled="@isLoading">
+                                @if (isLoading)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2" role="status"
+                                        aria-hidden="true"></span>
+                                    <span>Đang đăng ký...</span>
+                                }
+                                else
+                                {
+                                    <span>Đăng ký</span>
+                                }
+                            </button>
+                        </div>
+                    </EditForm>
+
+                    <div class="text-center mt-3">
+                        <p class="mb-0">Đã có tài khoản? <a href="/login" class="text-decoration-none">Đăng nhập</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="mb-3">
-        <label>Mật khẩu</label>
-        <InputText class="form-control" @bind-Value="registerModel.Password" type="password" />
-    </div>
-    <div class="mb-3">
-        <label>Nhập lại mật khẩu</label>
-        <InputText class="form-control" @bind-Value="registerModel.ConfirmPassword" type="password" />
-    </div>
-    <div class="mb-3">
-        <label>Họ tên</label>
-        <InputText class="form-control" @bind-Value="registerModel.FullName" />
-    </div>
-    <div class="mb-3">
-        <label>Email</label>
-        <InputText class="form-control" @bind-Value="registerModel.Email" />
-    </div>
-    <div class="mb-3">
-        <label>Số điện thoại</label>
-        <InputText class="form-control" @bind-Value="registerModel.Phone" />
-    </div>
-    <div class="mb-3">
-        <label>Địa chỉ</label>
-        <InputText class="form-control" @bind-Value="registerModel.Address" />
-    </div>
-    <button class="btn btn-success" type="submit">Đăng ký</button>
-    <span class="text-danger">@errorMessage</span>
-    <span class="text-success">@successMessage</span>
-</EditForm>
+</div>
 
 @code {
-    [CascadingParameter] public Action<string, string>? ShowToast { get; set; }
     private RegisterRequest registerModel = new();
-    private string errorMessage = string.Empty;
-    private string successMessage = string.Empty;
+    private bool isLoading = false;
 
     private async Task HandleRegister()
     {
-        errorMessage = string.Empty;
-        successMessage = string.Empty;
+        isLoading = true;
+
         try
         {
-            var response = await Http.PostAsJsonAsync("/api/Auth/register", registerModel);
-            var apiResponse = await response.Content.ReadFromJsonAsync<ApiResponse<AuthResponse>>();
-            if (apiResponse?.Success == true)
+            var result = await ApiService.RegisterAsync(registerModel);
+
+            if (result.Success)
             {
-                ShowToast?.Invoke(apiResponse.Message ?? "Đăng ký thành công! Vui lòng đăng nhập.", "success");
-                successMessage = apiResponse.Message ?? "Đăng ký thành công! Vui lòng đăng nhập.";
-                await Task.Delay(1500);
-                Navigation.NavigateTo("/login");
+                ToastService.ShowSuccess("Thành công", "Đăng ký thành công! Đang chuyển hướng...");
+
+                if (AuthStateProvider is CustomAuthenticationStateProvider customProvider)
+                {
+                    customProvider.NotifyAuthenticationStateChanged();
+                }
+                await Task.Delay(2000);
+                Navigation.NavigateTo("/");
             }
             else
             {
-                ShowToast?.Invoke(apiResponse?.Message ?? "Đăng ký thất bại.", "error");
-                errorMessage = apiResponse?.Message ?? "Đăng ký thất bại.";
+                ToastService.ShowError("Lỗi đăng ký", result.Message ?? "Đăng ký thất bại");
             }
         }
         catch (Exception ex)
         {
-            ShowToast?.Invoke(ex.Message, "error");
-            errorMessage = ex.Message;
+            ToastService.ShowError("Lỗi", $"Lỗi kết nối: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 }

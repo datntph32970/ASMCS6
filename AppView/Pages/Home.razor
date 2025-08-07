@@ -1,55 +1,191 @@
 ﻿@page "/"
-@using AppDB.Models.DtoAndViewModels.ProductsService.Dto
-@inject HttpClient Http
+@using AppView.Services
+@using AppDB.Models.DtoAndViewModels.AuthService.ViewModels
+@inject IApiService ApiService
+@inject IUserService UserService
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Trang chủ - Hệ thống Quản lý Đơn hàng</PageTitle>
 
-<h1>Hello, world!</h1>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="jumbotron bg-primary text-white p-4 rounded">
+                <h1 class="display-4">Chào mừng đến với Hệ thống Quản lý Đơn hàng</h1>
+                <p class="lead">Hệ thống quản lý đơn hàng hiệu quả và dễ sử dụng</p>
+            </div>
+        </div>
+    </div>
 
-Welcome to your new app.
+    <!-- Toast Debug Component -->
+    <div class="row mt-3">
+        <div class="col-12">
+            <ToastDebug />
+        </div>
+    </div>
 
-<h3>Danh sách sản phẩm</h3>
-
-@if (products == null)
-{
-    <p>Đang tải...</p>
-}
-else if (products.Count == 0)
-{
-    <p>Không có sản phẩm nào.</p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Tên sản phẩm</th>
-                <th>Mô tả</th>
-                <th>Giá</th>
-                <th>Ảnh</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var p in products)
+    <AuthorizeView>
+        <Authorized>
+            @if (currentUser != null)
             {
-                <tr>
-                    <td>@p.ProductName</td>
-                    <td>@p.Description</td>
-                    <td>@p.Price</td>
-                    <td>
-                        <img src="@p.ImageURL" alt="@p.ProductName" width="80" />
-                    </td>
-                </tr>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Thông tin người dùng</h5>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p><strong>Tên đăng nhập:</strong> @currentUser.Username</p>
+                                        <p><strong>Họ và tên:</strong> @currentUser.FullName</p>
+                                        <p><strong>Email:</strong> @currentUser.Email</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><strong>Số điện thoại:</strong> @currentUser.Phone</p>
+                                        <p><strong>Địa chỉ:</strong> @currentUser.Address</p>
+                                        <p><strong>Vai trò:</strong> <span
+                                                class="badge bg-info">@currentUser.RoleName</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             }
-        </tbody>
-    </table>
-}
+
+            <div class="row mt-4">
+                <div class="col-md-3">
+                    <div class="card text-white bg-success mb-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h5 class="card-title">Sản phẩm</h5>
+                                    <p class="card-text">Quản lý danh sách sản phẩm</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="bi bi-box-seam fs-1"></i>
+                                </div>
+                            </div>
+                            <a href="/products" class="btn btn-light btn-sm">Xem chi tiết</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card text-white bg-info mb-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h5 class="card-title">Đơn hàng</h5>
+                                    <p class="card-text">Theo dõi đơn hàng</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="bi bi-cart fs-1"></i>
+                                </div>
+                            </div>
+                            <a href="/orders" class="btn btn-light btn-sm">Xem chi tiết</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card text-white bg-warning mb-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h5 class="card-title">Combo</h5>
+                                    <p class="card-text">Quản lý combo sản phẩm</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="bi bi-collection fs-1"></i>
+                                </div>
+                            </div>
+                            <a href="/combos" class="btn btn-light btn-sm">Xem chi tiết</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card text-white bg-secondary mb-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h5 class="card-title">Danh mục</h5>
+                                    <p class="card-text">Phân loại sản phẩm</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="bi bi-tags fs-1"></i>
+                                </div>
+                            </div>
+                            <a href="/categories" class="btn btn-light btn-sm">Xem chi tiết</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <AuthorizeView Roles="Admin,Staff">
+                <Authorized>
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="card text-white bg-dark mb-3">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h5 class="card-title">Người dùng</h5>
+                                            <p class="card-text">Quản lý tài khoản người dùng</p>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="bi bi-people fs-1"></i>
+                                        </div>
+                                    </div>
+                                    <a href="/users" class="btn btn-light btn-sm">Xem chi tiết</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="card text-white bg-danger mb-3">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h5 class="card-title">Trạng thái</h5>
+                                            <p class="card-text">Quản lý trạng thái đơn hàng</p>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="bi bi-flag fs-1"></i>
+                                        </div>
+                                    </div>
+                                    <a href="/status" class="btn btn-light btn-sm">Xem chi tiết</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </Authorized>
+            </AuthorizeView>
+        </Authorized>
+
+        <NotAuthorized>
+            <div class="row mt-4">
+                <div class="col-md-6 offset-md-3">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Bạn chưa đăng nhập</h5>
+                            <p class="card-text">Vui lòng đăng nhập để sử dụng đầy đủ tính năng của hệ thống.</p>
+                            <div class="d-grid gap-2 d-md-block">
+                                <a href="/login" class="btn btn-primary">Đăng nhập</a>
+                                <a href="/register" class="btn btn-outline-primary">Đăng ký</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </NotAuthorized>
+    </AuthorizeView>
+</div>
 
 @code {
-    List<ProductsDto> products;
+    private UserInfo? currentUser;
 
     protected override async Task OnInitializedAsync()
     {
-        products = await Http.GetFromJsonAsync<List<ProductsDto>>("/api/Products");
+        currentUser = await UserService.GetCurrentUserAsync();
     }
 }

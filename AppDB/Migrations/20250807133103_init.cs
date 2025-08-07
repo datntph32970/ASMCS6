@@ -39,7 +39,7 @@ namespace AppDB.Migrations
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ComboName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Price = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     ImageURL = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     createdDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     createdByName = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -97,7 +97,7 @@ namespace AppDB.Migrations
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ProductName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Price = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     ImageURL = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CategoryID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     createdDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -219,7 +219,8 @@ namespace AppDB.Migrations
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     OrderID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ProductID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProductID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ComboID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     UnitPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     createdDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -233,6 +234,11 @@ namespace AppDB.Migrations
                 {
                     table.PrimaryKey("PK_OrderDetails", x => x.id);
                     table.ForeignKey(
+                        name: "FK_OrderDetails_Combos_ComboID",
+                        column: x => x.ComboID,
+                        principalTable: "Combos",
+                        principalColumn: "id");
+                    table.ForeignKey(
                         name: "FK_OrderDetails_Orders_OrderID",
                         column: x => x.OrderID,
                         principalTable: "Orders",
@@ -242,8 +248,7 @@ namespace AppDB.Migrations
                         name: "FK_OrderDetails_Products_ProductID",
                         column: x => x.ProductID,
                         principalTable: "Products",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "id");
                 });
 
             migrationBuilder.CreateTable(
@@ -251,9 +256,8 @@ namespace AppDB.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    StatuId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    StatusId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     OrderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Statusid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     createdDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     createdByName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     createdById = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -271,8 +275,8 @@ namespace AppDB.Migrations
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_StatusOrders_Status_Statusid",
-                        column: x => x.Statusid,
+                        name: "FK_StatusOrders_Status_StatusId",
+                        column: x => x.StatusId,
                         principalTable: "Status",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
@@ -289,9 +293,23 @@ namespace AppDB.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "Status",
+                columns: new[] { "id", "Description", "Name", "createdById", "createdByName", "createdDate", "updatedById", "updatedByName", "updatedDate" },
+                values: new object[,]
+                {
+                    { new Guid("44444444-4444-4444-4444-444444444444"), null, "Đã giao", new Guid("11111111-1111-1111-1111-111111111111"), "System", new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null, null, null },
+                    { new Guid("55555555-5555-5555-5555-555555555555"), null, "Chưa giao", new Guid("11111111-1111-1111-1111-111111111111"), "System", new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null, null, null },
+                    { new Guid("66666666-6666-6666-6666-666666666666"), null, "Đang giao", new Guid("11111111-1111-1111-1111-111111111111"), "System", new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null, null, null }
+                });
+
+            migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "id", "Address", "Email", "FullName", "Password", "Phone", "RoleId", "Username", "createdById", "createdByName", "createdDate", "updatedById", "updatedByName", "updatedDate" },
-                values: new object[] { new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), "Admin Address", "admin@example.com", "Administrator", "rA59A3gXCU6eC0RB+brjIJ1nsC+khJFwZfcbFhCaGng=", "0123456789", new Guid("11111111-1111-1111-1111-111111111111"), "admin", new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), "System", new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null, null, null });
+                values: new object[,]
+                {
+                    { new Guid("642da3c9-5c2a-4d5d-b03b-f2118baa61fe"), "Admin Address", "admin@example.com", "Administrator", "73l8gRjwLftklgfdXT+MdiMEjJwGPVMsyVxe16iYpk8=", "0123456789", new Guid("11111111-1111-1111-1111-111111111111"), "admin", new Guid("642da3c9-5c2a-4d5d-b03b-f2118baa61fe"), "System", new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null, null, null },
+                    { new Guid("b3c8cdf2-9b76-4a19-b008-10f70fb3467f"), "Staff Address", "staff@example.com", "Staff", "73l8gRjwLftklgfdXT+MdiMEjJwGPVMsyVxe16iYpk8=", "0123256789", new Guid("11111111-1111-1111-1111-111111111111"), "staff", new Guid("642da3c9-5c2a-4d5d-b03b-f2118baa61fe"), "System", new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null, null, null }
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ComboDetails_ComboID",
@@ -302,6 +320,11 @@ namespace AppDB.Migrations
                 name: "IX_ComboDetails_ProductID",
                 table: "ComboDetails",
                 column: "ProductID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderDetails_ComboID",
+                table: "OrderDetails",
+                column: "ComboID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OrderDetails_OrderID",
@@ -334,9 +357,9 @@ namespace AppDB.Migrations
                 column: "OrderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StatusOrders_Statusid",
+                name: "IX_StatusOrders_StatusId",
                 table: "StatusOrders",
-                column: "Statusid");
+                column: "StatusId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_RoleId",

@@ -1,116 +1,69 @@
-﻿<div class="sidebar-menu">
-    @if (isLoggedIn)
-    {
-        <div class="user-info-card">
-            <div class="avatar">
-                <span class="bi bi-person-circle"></span>
-            </div>
-            <div class="user-details">
-                <div class="user-name">@userFullName</div>
-                <div class="user-email">@userEmail</div>
-                <div class="user-role">@userRole</div>
-            </div>
-            <button class="btn btn-outline-light btn-sm logout-btn" @onclick="Logout">Đăng xuất</button>
-        </div>
-    }
-    else
-    {
-        <div class="user-info-card guest">
-            <div class="avatar">
-                <span class="bi bi-person-circle"></span>
-            </div>
-            <div class="user-details">
-                <div class="user-name">Khách</div>
-            </div>
-            <NavLink class="nav-link" href="login">
-                <span class="bi bi-box-arrow-in-right"></span> Đăng nhập
-            </NavLink>
-            <NavLink class="nav-link" href="register">
-                <span class="bi bi-person-plus"></span> Đăng ký
-            </NavLink>
-        </div>
-    }
-    <nav class="flex-column nav-links">
+﻿<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">Hệ thống Quản lý Đơn hàng</a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
+    <nav class="flex-column">
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="categories">
-                <span class="bi bi-folder"></span> Danh mục
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Trang chủ
             </NavLink>
         </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="combos">
-                <span class="bi bi-collection"></span> Combo
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="orders">
-                <span class="bi bi-receipt"></span> Đơn hàng
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="products">
-                <span class="bi bi-box"></span> Sản phẩm
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="users">
-                <span class="bi bi-people"></span> Người dùng
-            </NavLink>
-        </div>
+
+        <AuthorizeView>
+            <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="products">
+                        <span class="bi bi-box-seam-nav-menu" aria-hidden="true"></span> Sản phẩm
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="categories">
+                        <span class="bi bi-tags-nav-menu" aria-hidden="true"></span> Danh mục
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="orders">
+                        <span class="bi bi-cart-nav-menu" aria-hidden="true"></span> Đơn hàng
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="combos">
+                        <span class="bi bi-collection-nav-menu" aria-hidden="true"></span> Combo
+                    </NavLink>
+                </div>
+
+                <AuthorizeView Roles="Admin,Staff">
+                    <Authorized>
+                        <div class="nav-item px-3">
+                            <NavLink class="nav-link" href="users">
+                                <span class="bi bi-people-nav-menu" aria-hidden="true"></span> Người dùng
+                            </NavLink>
+                        </div>
+                        <div class="nav-item px-3">
+                            <NavLink class="nav-link" href="status">
+                                <span class="bi bi-flag-nav-menu" aria-hidden="true"></span> Trạng thái
+                            </NavLink>
+                        </div>
+                    </Authorized>
+                </AuthorizeView>
+            </Authorized>
+        </AuthorizeView>
     </nav>
 </div>
 
-@inject AppView.Services.AuthService AuthService
-@inject AppView.Services.AuthState AuthState
-
 @code {
-    private bool isLoggedIn = false;
-    private string userFullName = string.Empty;
-    private string userEmail = string.Empty;
-    private string userRole = string.Empty;
+    private bool collapseNavMenu = true;
 
-    protected override async Task OnInitializedAsync()
-    {
-        AuthState.OnAuthStateChanged += OnAuthStateChanged;
-        await LoadUserInfo();
-    }
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
-    private async void OnAuthStateChanged()
+    private void ToggleNavMenu()
     {
-        await LoadUserInfo();
-        StateHasChanged();
-    }
-
-    private async Task LoadUserInfo()
-    {
-        isLoggedIn = await AuthService.IsLoggedInAsync();
-        if (isLoggedIn)
-        {
-            var user = await AuthService.GetUserInfoAsync();
-            userFullName = user?.FullName ?? user?.Username ?? "";
-            userEmail = user?.Email ?? "";
-            userRole = user?.RoleName ?? "";
-        }
-        else
-        {
-            userFullName = string.Empty;
-            userEmail = string.Empty;
-            userRole = string.Empty;
-        }
-    }
-
-    private async Task Logout()
-    {
-        await AuthService.RemoveTokenAsync();
-        isLoggedIn = false;
-        userFullName = string.Empty;
-        userEmail = string.Empty;
-        userRole = string.Empty;
-        AuthState.NotifyAuthStateChanged();
-        StateHasChanged();
-    }
-
-    public void Dispose()
-    {
-        AuthState.OnAuthStateChanged -= OnAuthStateChanged;
+        collapseNavMenu = !collapseNavMenu;
     }
 }

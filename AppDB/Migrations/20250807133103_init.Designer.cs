@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppDB.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20250805160828_init2")]
-    partial class init2
+    [Migration("20250807133103_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace AppDB.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("AppDB.Models.Categories", b =>
+            modelBuilder.Entity("AppDB.Models.Entity.Categories", b =>
                 {
                     b.Property<Guid>("id")
                         .ValueGeneratedOnAdd()
@@ -61,7 +61,7 @@ namespace AppDB.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("AppDB.Models.ComboDetails", b =>
+            modelBuilder.Entity("AppDB.Models.Entity.ComboDetails", b =>
                 {
                     b.Property<Guid>("id")
                         .ValueGeneratedOnAdd()
@@ -103,7 +103,7 @@ namespace AppDB.Migrations
                     b.ToTable("ComboDetails");
                 });
 
-            modelBuilder.Entity("AppDB.Models.Combos", b =>
+            modelBuilder.Entity("AppDB.Models.Entity.Combos", b =>
                 {
                     b.Property<Guid>("id")
                         .ValueGeneratedOnAdd()
@@ -120,9 +120,8 @@ namespace AppDB.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Price")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<Guid>("createdById")
                         .HasColumnType("uniqueidentifier");
@@ -147,16 +146,19 @@ namespace AppDB.Migrations
                     b.ToTable("Combos");
                 });
 
-            modelBuilder.Entity("AppDB.Models.OrderDetails", b =>
+            modelBuilder.Entity("AppDB.Models.Entity.OrderDetails", b =>
                 {
                     b.Property<Guid>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("ComboID")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("OrderID")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ProductID")
+                    b.Property<Guid?>("ProductID")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Quantity")
@@ -185,6 +187,8 @@ namespace AppDB.Migrations
 
                     b.HasKey("id");
 
+                    b.HasIndex("ComboID");
+
                     b.HasIndex("OrderID");
 
                     b.HasIndex("ProductID");
@@ -192,7 +196,7 @@ namespace AppDB.Migrations
                     b.ToTable("OrderDetails");
                 });
 
-            modelBuilder.Entity("AppDB.Models.Orders", b =>
+            modelBuilder.Entity("AppDB.Models.Entity.Orders", b =>
                 {
                     b.Property<Guid>("id")
                         .ValueGeneratedOnAdd()
@@ -237,7 +241,7 @@ namespace AppDB.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("AppDB.Models.Products", b =>
+            modelBuilder.Entity("AppDB.Models.Entity.Products", b =>
                 {
                     b.Property<Guid>("id")
                         .ValueGeneratedOnAdd()
@@ -253,9 +257,8 @@ namespace AppDB.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Price")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("ProductName")
                         .IsRequired()
@@ -286,7 +289,7 @@ namespace AppDB.Migrations
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("AppDB.Models.Roles", b =>
+            modelBuilder.Entity("AppDB.Models.Entity.Roles", b =>
                 {
                     b.Property<Guid>("id")
                         .ValueGeneratedOnAdd()
@@ -345,7 +348,7 @@ namespace AppDB.Migrations
                         });
                 });
 
-            modelBuilder.Entity("AppDB.Models.Status", b =>
+            modelBuilder.Entity("AppDB.Models.Entity.Status", b =>
                 {
                     b.Property<Guid>("id")
                         .ValueGeneratedOnAdd()
@@ -379,9 +382,35 @@ namespace AppDB.Migrations
                     b.HasKey("id");
 
                     b.ToTable("Status");
+
+                    b.HasData(
+                        new
+                        {
+                            id = new Guid("44444444-4444-4444-4444-444444444444"),
+                            Name = "Đã giao",
+                            createdById = new Guid("11111111-1111-1111-1111-111111111111"),
+                            createdByName = "System",
+                            createdDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            id = new Guid("55555555-5555-5555-5555-555555555555"),
+                            Name = "Chưa giao",
+                            createdById = new Guid("11111111-1111-1111-1111-111111111111"),
+                            createdByName = "System",
+                            createdDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            id = new Guid("66666666-6666-6666-6666-666666666666"),
+                            Name = "Đang giao",
+                            createdById = new Guid("11111111-1111-1111-1111-111111111111"),
+                            createdByName = "System",
+                            createdDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        });
                 });
 
-            modelBuilder.Entity("AppDB.Models.StatusOrders", b =>
+            modelBuilder.Entity("AppDB.Models.Entity.StatusOrders", b =>
                 {
                     b.Property<Guid>("id")
                         .ValueGeneratedOnAdd()
@@ -420,7 +449,7 @@ namespace AppDB.Migrations
                     b.ToTable("StatusOrders");
                 });
 
-            modelBuilder.Entity("AppDB.Models.Users", b =>
+            modelBuilder.Entity("AppDB.Models.Entity.Users", b =>
                 {
                     b.Property<Guid>("id")
                         .ValueGeneratedOnAdd()
@@ -483,29 +512,43 @@ namespace AppDB.Migrations
                     b.HasData(
                         new
                         {
-                            id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            id = new Guid("642da3c9-5c2a-4d5d-b03b-f2118baa61fe"),
                             Address = "Admin Address",
                             Email = "admin@example.com",
                             FullName = "Administrator",
-                            Password = "rA59A3gXCU6eC0RB+brjIJ1nsC+khJFwZfcbFhCaGng=",
+                            Password = "73l8gRjwLftklgfdXT+MdiMEjJwGPVMsyVxe16iYpk8=",
                             Phone = "0123456789",
                             RoleId = new Guid("11111111-1111-1111-1111-111111111111"),
                             Username = "admin",
-                            createdById = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            createdById = new Guid("642da3c9-5c2a-4d5d-b03b-f2118baa61fe"),
+                            createdByName = "System",
+                            createdDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            id = new Guid("b3c8cdf2-9b76-4a19-b008-10f70fb3467f"),
+                            Address = "Staff Address",
+                            Email = "staff@example.com",
+                            FullName = "Staff",
+                            Password = "73l8gRjwLftklgfdXT+MdiMEjJwGPVMsyVxe16iYpk8=",
+                            Phone = "0123256789",
+                            RoleId = new Guid("11111111-1111-1111-1111-111111111111"),
+                            Username = "staff",
+                            createdById = new Guid("642da3c9-5c2a-4d5d-b03b-f2118baa61fe"),
                             createdByName = "System",
                             createdDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
 
-            modelBuilder.Entity("AppDB.Models.ComboDetails", b =>
+            modelBuilder.Entity("AppDB.Models.Entity.ComboDetails", b =>
                 {
-                    b.HasOne("AppDB.Models.Combos", "Combo")
+                    b.HasOne("AppDB.Models.Entity.Combos", "Combo")
                         .WithMany("ComboDetails")
                         .HasForeignKey("ComboID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AppDB.Models.Products", "Product")
+                    b.HasOne("AppDB.Models.Entity.Products", "Product")
                         .WithMany("ComboDetails")
                         .HasForeignKey("ProductID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -516,34 +559,38 @@ namespace AppDB.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("AppDB.Models.OrderDetails", b =>
+            modelBuilder.Entity("AppDB.Models.Entity.OrderDetails", b =>
                 {
-                    b.HasOne("AppDB.Models.Orders", "Order")
+                    b.HasOne("AppDB.Models.Entity.Combos", "Combo")
+                        .WithMany("OrderDetails")
+                        .HasForeignKey("ComboID");
+
+                    b.HasOne("AppDB.Models.Entity.Orders", "Order")
                         .WithMany("OrderDetails")
                         .HasForeignKey("OrderID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AppDB.Models.Products", "Product")
+                    b.HasOne("AppDB.Models.Entity.Products", "Product")
                         .WithMany("OrderDetails")
-                        .HasForeignKey("ProductID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ProductID");
+
+                    b.Navigation("Combo");
 
                     b.Navigation("Order");
 
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("AppDB.Models.Orders", b =>
+            modelBuilder.Entity("AppDB.Models.Entity.Orders", b =>
                 {
-                    b.HasOne("AppDB.Models.Users", "Customer")
+                    b.HasOne("AppDB.Models.Entity.Users", "Customer")
                         .WithMany("Customer_Orders")
                         .HasForeignKey("CustomerID")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("AppDB.Models.Users", "Staff")
+                    b.HasOne("AppDB.Models.Entity.Users", "Staff")
                         .WithMany("Staff_Orders")
                         .HasForeignKey("StaffID")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -553,9 +600,9 @@ namespace AppDB.Migrations
                     b.Navigation("Staff");
                 });
 
-            modelBuilder.Entity("AppDB.Models.Products", b =>
+            modelBuilder.Entity("AppDB.Models.Entity.Products", b =>
                 {
-                    b.HasOne("AppDB.Models.Categories", "Category")
+                    b.HasOne("AppDB.Models.Entity.Categories", "Category")
                         .WithMany("Products")
                         .HasForeignKey("CategoryID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -564,15 +611,15 @@ namespace AppDB.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("AppDB.Models.StatusOrders", b =>
+            modelBuilder.Entity("AppDB.Models.Entity.StatusOrders", b =>
                 {
-                    b.HasOne("AppDB.Models.Orders", "Order")
+                    b.HasOne("AppDB.Models.Entity.Orders", "Order")
                         .WithMany("StatusOrders")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AppDB.Models.Status", "Status")
+                    b.HasOne("AppDB.Models.Entity.Status", "Status")
                         .WithMany("StatusOrders")
                         .HasForeignKey("StatusId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -583,9 +630,9 @@ namespace AppDB.Migrations
                     b.Navigation("Status");
                 });
 
-            modelBuilder.Entity("AppDB.Models.Users", b =>
+            modelBuilder.Entity("AppDB.Models.Entity.Users", b =>
                 {
-                    b.HasOne("AppDB.Models.Roles", "Role")
+                    b.HasOne("AppDB.Models.Entity.Roles", "Role")
                         .WithMany("Users")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -594,41 +641,43 @@ namespace AppDB.Migrations
                     b.Navigation("Role");
                 });
 
-            modelBuilder.Entity("AppDB.Models.Categories", b =>
+            modelBuilder.Entity("AppDB.Models.Entity.Categories", b =>
                 {
                     b.Navigation("Products");
                 });
 
-            modelBuilder.Entity("AppDB.Models.Combos", b =>
+            modelBuilder.Entity("AppDB.Models.Entity.Combos", b =>
                 {
                     b.Navigation("ComboDetails");
+
+                    b.Navigation("OrderDetails");
                 });
 
-            modelBuilder.Entity("AppDB.Models.Orders", b =>
+            modelBuilder.Entity("AppDB.Models.Entity.Orders", b =>
                 {
                     b.Navigation("OrderDetails");
 
                     b.Navigation("StatusOrders");
                 });
 
-            modelBuilder.Entity("AppDB.Models.Products", b =>
+            modelBuilder.Entity("AppDB.Models.Entity.Products", b =>
                 {
                     b.Navigation("ComboDetails");
 
                     b.Navigation("OrderDetails");
                 });
 
-            modelBuilder.Entity("AppDB.Models.Roles", b =>
+            modelBuilder.Entity("AppDB.Models.Entity.Roles", b =>
                 {
                     b.Navigation("Users");
                 });
 
-            modelBuilder.Entity("AppDB.Models.Status", b =>
+            modelBuilder.Entity("AppDB.Models.Entity.Status", b =>
                 {
                     b.Navigation("StatusOrders");
                 });
 
-            modelBuilder.Entity("AppDB.Models.Users", b =>
+            modelBuilder.Entity("AppDB.Models.Entity.Users", b =>
                 {
                     b.Navigation("Customer_Orders");
 

@@ -1,0 +1,41 @@
+@using AppView.Services
+@using AppDB.Models.DtoAndViewModels.AuthService.ViewModels
+@inject IUserService UserService
+
+<div class="card">
+    <div class="card-header">
+        <h6 class="mb-0">Thông tin người dùng hiện tại</h6>
+    </div>
+    <div class="card-body">
+        @if (currentUser != null)
+        {
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>ID:</strong> @currentUser.Id</p>
+                    <p><strong>Username:</strong> @currentUser.Username</p>
+                    <p><strong>Full Name:</strong> @currentUser.FullName</p>
+                    <p><strong>Email:</strong> @currentUser.Email</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Phone:</strong> @currentUser.Phone</p>
+                    <p><strong>Address:</strong> @currentUser.Address</p>
+                    <p><strong>Role ID:</strong> @currentUser.RoleId</p>
+                    <p><strong>Role Name:</strong> <span class="badge bg-primary">@currentUser.RoleName</span></p>
+                </div>
+            </div>
+        }
+        else
+        {
+            <p class="text-muted">Không có thông tin người dùng</p>
+        }
+    </div>
+</div>
+
+@code {
+    private UserInfo? currentUser;
+
+    protected override async Task OnInitializedAsync()
+    {
+        currentUser = await UserService.GetCurrentUserAsync();
+    }
+}

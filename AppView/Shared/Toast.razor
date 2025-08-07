@@ -1,0 +1,149 @@
+@using Microsoft.JSInterop
+@using AppView.Services
+@inject IToastService ToastService
+@implements IDisposable
+
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;">
+    @foreach (var toast in toasts)
+    {
+        <div class="toast @(toast.IsVisible ? "show" : "")" role="alert" aria-live="assertive" aria-atomic="true"
+            id="@toast.Id">
+            <div class="toast-header @GetToastHeaderClass(toast.Type)">
+                <i class="@GetToastIcon(toast.Type) me-2"></i>
+                <strong class="me-auto">@toast.Title</strong>
+                <small>@toast.Timestamp.ToString("HH:mm")</small>
+                <button type="button" class="btn-close" @onclick="() => RemoveToast(toast.Id)"></button>
+            </div>
+            <div class="toast-body">
+                @toast.Message
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private List<ToastItem> toasts = new();
+    private int nextId = 1;
+
+    public class ToastItem
+    {
+        public string Id { get; set; } = "";
+        public string Title { get; set; } = "";
+        public string Message { get; set; } = "";
+        public ToastType Type { get; set; } = ToastType.Info;
+        public DateTime Timestamp { get; set; } = DateTime.Now;
+        public bool IsVisible { get; set; } = true;
+        public int AutoHideDelay { get; set; } = 5000; // 5 seconds
+    }
+
+    public enum ToastType
+    {
+        Success,
+        Error,
+        Warning,
+        Info
+    }
+
+    protected override void OnInitialized()
+    {
+        if (ToastService is ToastService toastService)
+        {
+            toastService.SetToastComponent(this);
+        }
+    }
+
+    public void ShowToast(string title, string message, ToastType type = ToastType.Info, int autoHideDelay = 5000)
+    {
+        var toast = new ToastItem
+        {
+            Id = $"toast-{nextId++}",
+            Title = title,
+            Message = message,
+            Type = type,
+            Timestamp = DateTime.Now,
+            AutoHideDelay = autoHideDelay
+        };
+
+        toasts.Add(toast);
+        StateHasChanged();
+
+        // Auto hide after delay
+        if (autoHideDelay > 0)
+        {
+            _ = Task.Delay(autoHideDelay).ContinueWith(_ =>
+            {
+                InvokeAsync(() =>
+    {
+                RemoveToast(toast.Id);
+                StateHasChanged();
+            });
+            });
+        }
+    }
+
+    public void ShowSuccess(string title, string message, int autoHideDelay = 5000)
+    {
+        ShowToast(title, message, ToastType.Success, autoHideDelay);
+    }
+
+    public void ShowError(string title, string message, int autoHideDelay = 8000)
+    {
+        ShowToast(title, message, ToastType.Error, autoHideDelay);
+    }
+
+    public void ShowWarning(string title, string message, int autoHideDelay = 6000)
+    {
+        ShowToast(title, message, ToastType.Warning, autoHideDelay);
+    }
+
+    public void ShowInfo(string title, string message, int autoHideDelay = 5000)
+    {
+        ShowToast(title, message, ToastType.Info, autoHideDelay);
+    }
+
+    private void RemoveToast(string id)
+    {
+        var toast = toasts.FirstOrDefault(t => t.Id == id);
+        if (toast != null)
+        {
+            toast.IsVisible = false;
+            toasts.Remove(toast);
+            StateHasChanged();
+        }
+    }
+
+    private string GetToastHeaderClass(ToastType type)
+    {
+        return type switch
+        {
+            ToastType.Success => "bg-success text-white",
+            ToastType.Error => "bg-danger text-white",
+            ToastType.Warning => "bg-warning text-dark",
+            ToastType.Info => "bg-info text-white",
+            _ => "bg-secondary text-white"
+        };
+    }
+
+    private string GetToastIcon(ToastType type)
+    {
+        return type switch
+        {
+            ToastType.Success => "bi bi-check-circle-fill",
+            ToastType.Error => "bi bi-exclamation-triangle-fill",
+            ToastType.Warning => "bi bi-exclamation-circle-fill",
+            ToastType.Info => "bi bi-info-circle-fill",
+            _ => "bi bi-info-circle-fill"
+        };
+    }
+
+    public void ClearAll()
+    {
+        toasts.Clear();
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        // Cleanup if needed
+    }
+}

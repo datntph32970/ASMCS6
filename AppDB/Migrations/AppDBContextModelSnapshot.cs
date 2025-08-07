@@ -509,15 +509,29 @@ namespace AppDB.Migrations
                     b.HasData(
                         new
                         {
-                            id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            id = new Guid("642da3c9-5c2a-4d5d-b03b-f2118baa61fe"),
                             Address = "Admin Address",
                             Email = "admin@example.com",
                             FullName = "Administrator",
-                            Password = "rA59A3gXCU6eC0RB+brjIJ1nsC+khJFwZfcbFhCaGng=",
+                            Password = "73l8gRjwLftklgfdXT+MdiMEjJwGPVMsyVxe16iYpk8=",
                             Phone = "0123456789",
                             RoleId = new Guid("11111111-1111-1111-1111-111111111111"),
                             Username = "admin",
-                            createdById = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            createdById = new Guid("642da3c9-5c2a-4d5d-b03b-f2118baa61fe"),
+                            createdByName = "System",
+                            createdDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            id = new Guid("b3c8cdf2-9b76-4a19-b008-10f70fb3467f"),
+                            Address = "Staff Address",
+                            Email = "staff@example.com",
+                            FullName = "Staff",
+                            Password = "73l8gRjwLftklgfdXT+MdiMEjJwGPVMsyVxe16iYpk8=",
+                            Phone = "0123256789",
+                            RoleId = new Guid("11111111-1111-1111-1111-111111111111"),
+                            Username = "staff",
+                            createdById = new Guid("642da3c9-5c2a-4d5d-b03b-f2118baa61fe"),
                             createdByName = "System",
                             createdDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
