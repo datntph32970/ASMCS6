@@ -1,0 +1,174 @@
+@page "/categories/{Id:guid}"
+@attribute [Authorize(Roles = "Admin,Staff")]
+@using AppDB.Models.DtoAndViewModels.CategoriesService.Dto
+@using AppView.Services
+@using Microsoft.AspNetCore.Authorization
+@inject IApiService ApiService
+@inject IToastService ToastService
+@inject NavigationManager Navigation
+
+<PageTitle>Chi tiết Danh mục</PageTitle>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Chi tiết Danh mục</h4>
+                    <div>
+                        <button class="btn btn-secondary me-2" @onclick="NavigateToCategories">
+                            <i class="fas fa-arrow-left"></i> Quay lại
+                        </button>
+                        <button class="btn btn-primary" @onclick="NavigateToEdit">
+                            <i class="fas fa-edit"></i> Chỉnh sửa
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    @if (isLoading)
+                    {
+                        <div class="text-center">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    }
+                    else if (category != null)
+                    {
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">ID:</label>
+                                    <p class="form-control-plaintext">@category.id</p>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Tên danh mục:</label>
+                                    <p class="form-control-plaintext">@category.CategoryName</p>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Mô tả:</label>
+                                    <p class="form-control-plaintext">@(string.IsNullOrEmpty(category.Description) ? "Không có mô tả" : category.Description)</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Ngày tạo:</label>
+                                    <p class="form-control-plaintext">@category.createdDate.ToString("dd/MM/yyyy HH:mm:ss")</p>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Người tạo:</label>
+                                    <p class="form-control-plaintext">@(string.IsNullOrEmpty(category.createdByName) ? "Không xác định" : category.createdByName)</p>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Số sản phẩm:</label>
+                                    <p class="form-control-plaintext">@(category.Products?.Count ?? 0) sản phẩm</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (category.Products != null && category.Products.Any())
+                        {
+                            <hr />
+                            <h5>Sản phẩm trong danh mục</h5>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>STT</th>
+                                            <th>Tên sản phẩm</th>
+                                            <th>Giá</th>
+                                            <th>Hình ảnh</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (int i = 0; i < category.Products.Count; i++)
+                                        {
+                                            var product = category.Products.ElementAt(i);
+                                            <tr>
+                                                <td>@(i + 1)</td>
+                                                <td>@product.ProductName</td>
+                                                <td>@product.Price.ToString("N0") VNĐ</td>
+                                                <td>
+                                                    @if (!string.IsNullOrEmpty(product.ImageURL))
+                                                    {
+                                                        <img src="@product.ImageURL" alt="@product.ProductName" style="width: 50px; height: 50px; object-fit: cover;" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-muted">Không có hình</span>
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                            <h5 class="text-warning">Không tìm thấy danh mục</h5>
+                            <p class="text-muted">Danh mục bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.</p>
+                            <button class="btn btn-primary" @onclick="NavigateToCategories">
+                                Quay lại danh sách
+                            </button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private CategoriesDto? category;
+    private bool isLoading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCategory();
+    }
+
+    private void NavigateToCategories()
+    {
+        Navigation.NavigateTo("/categories");
+    }
+
+    private void NavigateToEdit()
+    {
+        Navigation.NavigateTo("/categories/edit/" + Id);
+    }
+
+    private async Task LoadCategory()
+    {
+        isLoading = true;
+        try
+        {
+            var response = await ApiService.GetAsync<CategoriesDto>($"Categories/{Id}");
+            
+            if (response.Success)
+            {
+                category = response.Data;
+            }
+            else
+            {
+                ToastService.ShowError("Lỗi", response.Message ?? "Không thể tải thông tin danh mục");
+                category = null;
+            }
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError("Lỗi", $"Lỗi kết nối: {ex.Message}");
+            category = null;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}

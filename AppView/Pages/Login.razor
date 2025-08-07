@@ -66,9 +66,18 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // Clear any existing user data when accessing login page
-        await ApiService.ClearTokenAsync();
-        await ApiService.ClearUserInfoAsync();
+        // Check if user is already authenticated
+        var isAuthenticated = await ApiService.IsAuthenticatedAsync();
+        if (isAuthenticated)
+        {
+            Navigation.NavigateTo("/");
+        }
+        else
+        {
+            // Clear any existing invalid data when accessing login page
+            await ApiService.ClearTokenAsync();
+            await ApiService.ClearUserInfoAsync();
+        }
     }
 
     private async Task HandleLogin()
@@ -81,6 +90,12 @@
 
             if (result.Success)
             {
+                Console.WriteLine("Login successful, checking token...");
+                var token = await ApiService.GetTokenAsync();
+                var userInfo = await ApiService.GetUserInfoAsync();
+                Console.WriteLine($"Token after login: {(string.IsNullOrEmpty(token) ? "null" : "saved")}");
+                Console.WriteLine($"User info after login: {(userInfo == null ? "null" : userInfo.Username)}");
+
                 ToastService.ShowSuccess("Thành công", "Đăng nhập thành công! Đang chuyển hướng...");
 
                 // Notify authentication state change

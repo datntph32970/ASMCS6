@@ -29,9 +29,11 @@ namespace AppView.Services
                 if (response.IsSuccessStatusCode)
                 {
                     var result = await response.Content.ReadFromJsonAsync<ApiResponse<AuthResponse>>();
+                    Console.WriteLine($"Login response: Success={result?.Success}, Data={result?.Data != null}");
 
                     if (result?.Success == true && result.Data?.Token != null)
                     {
+                        Console.WriteLine("Saving token and user info...");
                         await SetTokenAsync(result.Data.Token);
 
                         // Save user information
@@ -39,6 +41,15 @@ namespace AppView.Services
                         {
                             await SetUserInfoAsync(result.Data.User);
                         }
+
+                        // Verify everything was saved
+                        var savedToken = await GetTokenAsync();
+                        var savedUserInfo = await GetUserInfoAsync();
+                        Console.WriteLine($"Final verification - Token: {(string.IsNullOrEmpty(savedToken) ? "null" : "saved")}, User: {(savedUserInfo == null ? "null" : savedUserInfo.Username)}");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Login failed: Success={result?.Success}, Token={result?.Data?.Token != null}");
                     }
 
                     return result ?? new ApiResponse<AuthResponse> { Success = false, Message = "Login failed" };
@@ -64,9 +75,11 @@ namespace AppView.Services
                 if (response.IsSuccessStatusCode)
                 {
                     var result = await response.Content.ReadFromJsonAsync<ApiResponse<AuthResponse>>();
+                    Console.WriteLine($"Register response: Success={result?.Success}, Data={result?.Data != null}");
 
                     if (result?.Success == true && result.Data?.Token != null)
                     {
+                        Console.WriteLine("Saving token and user info from registration...");
                         await SetTokenAsync(result.Data.Token);
 
                         // Save user information
@@ -74,6 +87,15 @@ namespace AppView.Services
                         {
                             await SetUserInfoAsync(result.Data.User);
                         }
+
+                        // Verify everything was saved
+                        var savedToken = await GetTokenAsync();
+                        var savedUserInfo = await GetUserInfoAsync();
+                        Console.WriteLine($"Final verification - Token: {(string.IsNullOrEmpty(savedToken) ? "null" : "saved")}, User: {(savedUserInfo == null ? "null" : savedUserInfo.Username)}");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Registration failed: Success={result?.Success}, Token={result?.Data?.Token != null}");
                     }
 
                     return result ?? new ApiResponse<AuthResponse> { Success = false, Message = "Registration failed" };
@@ -107,10 +129,13 @@ namespace AppView.Services
         {
             try
             {
-                return await _jsRuntime.InvokeAsync<string>("localStorage.getItem", TokenKey);
+                var token = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", TokenKey);
+                Console.WriteLine($"Token retrieved: {(string.IsNullOrEmpty(token) ? "null" : token.Substring(0, Math.Min(20, token.Length)) + "...")}");
+                return token;
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"Error getting token: {ex.Message}");
                 return null;
             }
         }
@@ -119,11 +144,16 @@ namespace AppView.Services
         {
             try
             {
+                Console.WriteLine($"Setting token: {token.Substring(0, Math.Min(20, token.Length))}...");
                 await _jsRuntime.InvokeVoidAsync("localStorage.setItem", TokenKey, token);
+
+                // Verify token was saved
+                var savedToken = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", TokenKey);
+                Console.WriteLine($"Token verification: {(string.IsNullOrEmpty(savedToken) ? "failed" : "success")}");
             }
-            catch
+            catch (Exception ex)
             {
-                // Handle error silently
+                Console.WriteLine($"Error saving token: {ex.Message}");
             }
         }
 
@@ -131,18 +161,22 @@ namespace AppView.Services
         {
             try
             {
+                Console.WriteLine("Clearing token...");
                 await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", TokenKey);
+                Console.WriteLine("Token cleared");
             }
-            catch
+            catch (Exception ex)
             {
-                // Handle error silently
+                Console.WriteLine($"Error clearing token: {ex.Message}");
             }
         }
 
         public async Task<bool> IsAuthenticatedAsync()
         {
             var token = await GetTokenAsync();
-            return !string.IsNullOrEmpty(token);
+            var isAuthenticated = !string.IsNullOrEmpty(token);
+            Console.WriteLine($"IsAuthenticatedAsync: {isAuthenticated}");
+            return isAuthenticated;
         }
 
         // User information management methods
@@ -151,13 +185,15 @@ namespace AppView.Services
             try
             {
                 var userInfoJson = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", UserInfoKey);
+                Console.WriteLine($"User info retrieved: {(string.IsNullOrEmpty(userInfoJson) ? "null" : userInfoJson)}");
                 if (string.IsNullOrEmpty(userInfoJson))
                     return null;
 
                 return JsonSerializer.Deserialize<UserInfo>(userInfoJson);
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"Error getting user info: {ex.Message}");
                 return null;
             }
         }
@@ -166,12 +202,17 @@ namespace AppView.Services
         {
             try
             {
+                Console.WriteLine($"Setting user info: {userInfo.Username}");
                 var userInfoJson = JsonSerializer.Serialize(userInfo);
                 await _jsRuntime.InvokeVoidAsync("localStorage.setItem", UserInfoKey, userInfoJson);
+
+                // Verify user info was saved
+                var savedUserInfo = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", UserInfoKey);
+                Console.WriteLine($"User info verification: {(string.IsNullOrEmpty(savedUserInfo) ? "failed" : "success")}");
             }
-            catch
+            catch (Exception ex)
             {
-                // Handle error silently
+                Console.WriteLine($"Error saving user info: {ex.Message}");
             }
         }
 
@@ -179,12 +220,109 @@ namespace AppView.Services
         {
             try
             {
+                Console.WriteLine("Clearing user info...");
                 await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", UserInfoKey);
+                Console.WriteLine("User info cleared");
             }
-            catch
+            catch (Exception ex)
             {
-                // Handle error silently
+                Console.WriteLine($"Error clearing user info: {ex.Message}");
             }
         }
+
+        // Generic CRUD methods
+        public async Task<ApiResponse<T>> GetAsync<T>(string endpoint)
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync($"{BaseUrl}/{endpoint}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await response.Content.ReadFromJsonAsync<ApiResponse<T>>();
+                    return result ?? new ApiResponse<T> { Success = false, Message = "Failed to deserialize response" };
+                }
+                else
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    return new ApiResponse<T> { Success = false, Message = $"Request failed: {response.StatusCode}" };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<T> { Success = false, Message = $"Request error: {ex.Message}" };
+            }
+        }
+
+        public async Task<ApiResponse<T>> PostAsync<T>(string endpoint, object data)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync($"{BaseUrl}/{endpoint}", data);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await response.Content.ReadFromJsonAsync<ApiResponse<T>>();
+                    return result ?? new ApiResponse<T> { Success = false, Message = "Failed to deserialize response" };
+                }
+                else
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    return new ApiResponse<T> { Success = false, Message = $"Request failed: {response.StatusCode}" };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<T> { Success = false, Message = $"Request error: {ex.Message}" };
+            }
+        }
+
+        public async Task<ApiResponse<T>> PutAsync<T>(string endpoint, object data)
+        {
+            try
+            {
+                var response = await _httpClient.PutAsJsonAsync($"{BaseUrl}/{endpoint}", data);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await response.Content.ReadFromJsonAsync<ApiResponse<T>>();
+                    return result ?? new ApiResponse<T> { Success = false, Message = "Failed to deserialize response" };
+                }
+                else
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    return new ApiResponse<T> { Success = false, Message = $"Request failed: {response.StatusCode}" };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<T> { Success = false, Message = $"Request error: {ex.Message}" };
+            }
+        }
+
+        public async Task<ApiResponse<bool>> DeleteAsync(string endpoint)
+        {
+            try
+            {
+                var response = await _httpClient.DeleteAsync($"{BaseUrl}/{endpoint}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await response.Content.ReadFromJsonAsync<ApiResponse<bool>>();
+                    return result ?? new ApiResponse<bool> { Success = false, Message = "Failed to deserialize response" };
+                }
+                else
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    return new ApiResponse<bool> { Success = false, Message = $"Request failed: {response.StatusCode}" };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<bool> { Success = false, Message = $"Request error: {ex.Message}" };
+            }
+        }
+
+
     }
 }

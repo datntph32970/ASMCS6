@@ -1,0 +1,105 @@
+@page "/categories/create"
+@attribute [Authorize(Roles = "Admin,Staff")]
+@using AppDB.Models.DtoAndViewModels.CategoriesService.ViewModels
+@using AppView.Services
+@using Microsoft.AspNetCore.Authorization
+@inject IApiService ApiService
+@inject IToastService ToastService
+@inject NavigationManager Navigation
+
+<PageTitle>Thêm mới Danh mục</PageTitle>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Thêm mới Danh mục</h4>
+                    <button class="btn btn-secondary" @onclick="NavigateToCategories">
+                        <i class="fas fa-arrow-left"></i> Quay lại
+                    </button>
+                </div>
+                <div class="card-body">
+                    <EditForm Model="@createModel" OnValidSubmit="HandleSubmit">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="categoryName" class="form-label">Tên danh mục *</label>
+                                    <InputText id="categoryName" class="form-control"
+                                        @bind-Value="createModel.CategoryName" />
+                                    <ValidationMessage For="@(() => createModel.CategoryName)" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Mô tả</label>
+                                    <InputTextArea id="description" class="form-control" rows="3"
+                                        @bind-Value="createModel.Description" />
+                                    <ValidationMessage For="@(() => createModel.Description)" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+                            <button type="button" class="btn btn-secondary me-2" @onclick="NavigateToCategories">
+                                Hủy
+                            </button>
+                            <button type="submit" class="btn btn-primary" disabled="@isSubmitting">
+                                @if (isSubmitting)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2" role="status"
+                                        aria-hidden="true"></span>
+                                    <span>Đang lưu...</span>
+                                }
+                                else
+                                {
+                                    <span>Thêm mới</span>
+                                }
+                            </button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private CategoriesCreateVM createModel = new();
+    private bool isSubmitting = false;
+
+    private void NavigateToCategories()
+    {
+        Navigation.NavigateTo("/categories");
+    }
+
+    private async Task HandleSubmit()
+    {
+        isSubmitting = true;
+        try
+        {
+            var response = await ApiService.PostAsync<object>("Categories", createModel);
+
+            if (response.Success)
+            {
+                ToastService.ShowSuccess("Thành công", "Thêm danh mục thành công!");
+                Navigation.NavigateTo("/categories");
+            }
+            else
+            {
+                ToastService.ShowError("Lỗi", response.Message ?? "Thêm danh mục thất bại");
+            }
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError("Lỗi", $"Lỗi kết nối: {ex.Message}");
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+}

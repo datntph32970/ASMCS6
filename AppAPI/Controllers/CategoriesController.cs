@@ -49,7 +49,7 @@ namespace AppAPI.Controllers
                 return BadRequest(ApiResponse<CategoriesCreateVM>.Error("Dữ liệu không hợp lệ"));
             var category = _mapper.Map<CategoriesCreateVM,Categories>(request);
             await _categoriesService.CreateAsync(category);
-            return CreatedAtAction(nameof(GetCategory), new { id = category.id }, category);
+            return Ok(ApiResponse<Categories>.Ok(category, "Cập nhật danh mục thành công"));
         }
 
         [HttpPut]

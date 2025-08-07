@@ -12,10 +12,16 @@ namespace AppView.Services
         Task SetTokenAsync(string token);
         Task ClearTokenAsync();
         Task<bool> IsAuthenticatedAsync();
-        
+
         // User information management
         Task<UserInfo?> GetUserInfoAsync();
         Task SetUserInfoAsync(UserInfo userInfo);
         Task ClearUserInfoAsync();
+
+        // Generic CRUD methods
+        Task<ApiResponse<T>> GetAsync<T>(string endpoint);
+        Task<ApiResponse<T>> PostAsync<T>(string endpoint, object data);
+        Task<ApiResponse<T>> PutAsync<T>(string endpoint, object data);
+        Task<ApiResponse<bool>> DeleteAsync(string endpoint);
     }
 }

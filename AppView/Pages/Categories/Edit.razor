@@ -1,0 +1,172 @@
+@page "/categories/edit/{Id:guid}"
+@attribute [Authorize(Roles = "Admin,Staff")]
+@using AppDB.Models.DtoAndViewModels.CategoriesService.Dto
+@using AppDB.Models.DtoAndViewModels.CategoriesService.ViewModels
+@using AppView.Services
+@using Microsoft.AspNetCore.Authorization
+@inject IApiService ApiService
+@inject IToastService ToastService
+@inject NavigationManager Navigation
+
+<PageTitle>Chỉnh sửa Danh mục</PageTitle>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Chỉnh sửa Danh mục</h4>
+                    <button class="btn btn-secondary" @onclick="NavigateToCategories">
+                        <i class="fas fa-arrow-left"></i> Quay lại
+                    </button>
+                </div>
+                <div class="card-body">
+                    @if (isLoading)
+                    {
+                        <div class="text-center">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    }
+                    else if (category != null)
+                    {
+                        <EditForm Model="@updateModel" OnValidSubmit="HandleSubmit">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary />
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="categoryName" class="form-label">Tên danh mục *</label>
+                                        <InputText id="categoryName" class="form-control"
+                                            @bind-Value="updateModel.CategoryName" />
+                                        <ValidationMessage For="@(() => updateModel.CategoryName)" />
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="description" class="form-label">Mô tả</label>
+                                        <InputTextArea id="description" class="form-control" rows="3"
+                                            @bind-Value="updateModel.Description" />
+                                        <ValidationMessage For="@(() => updateModel.Description)" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="btn btn-secondary me-2" @onclick="NavigateToCategories">
+                                    Hủy
+                                </button>
+                                <button type="submit" class="btn btn-primary" disabled="@isSubmitting">
+                                    @if (isSubmitting)
+                                    {
+                                        <span class="spinner-border spinner-border-sm me-2" role="status"
+                                            aria-hidden="true"></span>
+                                        <span>Đang lưu...</span>
+                                    }
+                                    else
+                                    {
+                                        <span>Cập nhật</span>
+                                    }
+                                </button>
+                            </div>
+                        </EditForm>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                            <h5 class="text-warning">Không tìm thấy danh mục</h5>
+                            <p class="text-muted">Danh mục bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.</p>
+                            <button class="btn btn-primary" @onclick="NavigateToCategories">
+                                Quay lại danh sách
+                            </button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private CategoriesDto? category;
+    private CategoriesUpdateVM updateModel = new();
+    private bool isLoading = false;
+    private bool isSubmitting = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCategory();
+    }
+
+    private void NavigateToCategories()
+    {
+        Navigation.NavigateTo("/categories");
+    }
+
+    private async Task LoadCategory()
+    {
+        isLoading = true;
+        try
+        {
+            var response = await ApiService.GetAsync<CategoriesDto>($"Categories/{Id}");
+
+            if (response.Success)
+            {
+                category = response.Data;
+                updateModel = new CategoriesUpdateVM
+                {
+                    Id = category.id,
+                    CategoryName = category.CategoryName,
+                    Description = category.Description
+                };
+            }
+            else
+            {
+                ToastService.ShowError("Lỗi", response.Message ?? "Không thể tải thông tin danh mục");
+                category = null;
+            }
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError("Lỗi", $"Lỗi kết nối: {ex.Message}");
+            category = null;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        isSubmitting = true;
+        try
+        {
+            var response = await ApiService.PutAsync<CategoriesDto>("Categories", updateModel);
+
+            if (response.Success)
+            {
+                ToastService.ShowSuccess("Thành công", "Cập nhật danh mục thành công!");
+                Navigation.NavigateTo("/categories");
+            }
+            else
+            {
+                ToastService.ShowError("Lỗi", response.Message ?? "Cập nhật danh mục thất bại");
+            }
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError("Lỗi", $"Lỗi kết nối: {ex.Message}");
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+}

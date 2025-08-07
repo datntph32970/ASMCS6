@@ -61,7 +61,7 @@ namespace AppAPI.Controllers
             }
 
             await _productsService.CreateAsync(product);
-            return CreatedAtAction(nameof(GetProduct), new { id = product.id }, product);
+            return Ok(ApiResponse<Products>.Ok(product, "Cập nhật sản phẩm thành công"));
         }
 
         [HttpPut]
